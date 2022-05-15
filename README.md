@@ -55,3 +55,10 @@ MockNet 是对服务端的mock工具，帮助前端开发初期解决数据mock�
 如果配置信息 不是restful的时候，会读取body中的key_name设置的值，如果key_name为空的时候，会代理请求远端服务，如果body中没有key_name设置的值，也会代理请求远端服务
 
 
+
+#feature
+- 上传文件
+- 下载文件
+- get/delete 更具path参数来读取数据
+- 图片
+

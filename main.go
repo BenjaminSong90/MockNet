@@ -14,7 +14,9 @@ import (
 	"net/http/httputil"
 	"strings"
 )
+
 var mockConfig = model.MockConfig{}
+
 func main() {
 
 	err := utils.LoadFileJson("config/mock_config.json", &mockConfig)
@@ -48,7 +50,7 @@ func main() {
 		}
 	}
 	address := "8080"
-	if len(mockConfig.Address) != 0{
+	if len(mockConfig.Address) != 0 {
 		address = mockConfig.Address
 	}
 
@@ -66,7 +68,6 @@ func addPostApi(r *gin.Engine, detail model.ApiInfoDetail) {
 		handleBodyRequest(context, detail)
 	})
 }
-
 
 func addDeleteApi(r *gin.Engine, detail model.ApiInfoDetail) {
 	r.DELETE(detail.Path, func(context *gin.Context) {
@@ -100,7 +101,7 @@ func handleBodyRequest(context *gin.Context, detail model.ApiInfoDetail) {
 		case binding.MIMEMultipartPOSTForm:
 			fallthrough
 		default: // case MIMEPOSTForm:
-			context.JSON(http.StatusOK, gin.H{"status": "error", "message":"content-type not support"})
+			context.JSON(http.StatusOK, gin.H{"status": "error", "message": "content-type not support"})
 		}
 	}
 }
@@ -123,7 +124,7 @@ func handleJsonType(context *gin.Context, detail model.ApiInfoDetail) {
 	functionCode, exist := kvMap[detail.KeyName]
 	if exist {
 		data, exist := detail.Data[functionCode.(string)]
-		if exist{
+		if exist {
 			context.JSON(http.StatusOK, data)
 		} else {
 			reverseProxy(context, jsonData)
