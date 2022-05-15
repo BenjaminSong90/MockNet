@@ -17,10 +17,10 @@ func NoFundHandle(mockConfig model.MockConfig, mockApiInfo model.MockApiInfo) gi
 			}
 		}
 
-		if !hasFond && len(mockConfig.ProxyHost) != 0 && len(mockConfig.Scheme) != 0{
+		if !hasFond && len(mockConfig.ProxyHost) != 0 && len(mockConfig.ProxyScheme) != 0{
 			director := func(req *http.Request) {
 				req.Host = mockConfig.ProxyHost
-				req.URL.Scheme = mockConfig.Scheme
+				req.URL.Scheme = mockConfig.ProxyScheme
 				req.URL.Host = req.Host
 			}
 			proxy := &httputil.ReverseProxy{Director: director}

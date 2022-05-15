@@ -5,9 +5,9 @@ type MockApiInfo struct {
 }
 
 type MockConfig struct {
-	ProxyHost string `json:"proxy_host"` //请求代理的host
-	Address   string `json:"address"`    //服务端启动的address
-	Scheme    string `json:"scheme"`     //请求代理的host
+	ProxyHost   string `json:"proxy_host"`   //请求代理的host
+	Address     string `json:"address"`      //服务端启动的address
+	ProxyScheme string `json:"proxy_scheme"` //请求代理的host
 }
 
 type ApiInfoDetail struct {

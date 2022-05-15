@@ -1,2 +1,57 @@
 # MockNet
-mock server
+MockNet 是对服务端的mock工具，帮助前端开发初期解决数据mock的问题，调用的api不存在的时候,会根据本地的proxy配置信息来调用远端的api
+
+
+**mock_config.json**工具的配置工具
+```json
+{
+  "proxy_host": "www.proxy_host.com",//代理的host
+  "address": ":8080",//本地服务启动的端口
+  "proxy_scheme": "https"//代理的scheme
+}
+```
+
+**api.json** 是mock api返回数据
+```json
+{
+  "api":[
+    {
+      "path": "/test",
+      "method": "GET",
+      "data": {
+        "/test": {
+          "a": "aa",
+          "nb": "real nb"
+        }
+      }
+    },
+    {
+      "path": "/test1",
+      "method": "POST",
+      "is_restful": false,
+      "key_name": "h",
+      "data": {
+        "test2": {
+          "a": "aa",
+          "nb": "real nb"
+        }
+      }
+    },
+    {
+      "path": "/test2",
+      "method": "POST",
+      "is_restful": true,
+      "data": {
+        "/test2": {
+          "a": "aa",
+          "nb": "real nb"
+        }
+      }
+    }
+  ]
+}
+```
+当api的配置信息为 restful的时候，会根据api的path信息直接返回配置的数据，几直接去读data下的path对应的数据，不存在的时候会返回空。
+如果配置信息 不是restful的时候，会读取body中的key_name设置的值，如果key_name为空的时候，会代理请求远端服务，如果body中没有key_name设置的值，也会代理请求远端服务
+
+

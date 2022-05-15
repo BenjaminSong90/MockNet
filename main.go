@@ -137,7 +137,7 @@ func handleJsonType(context *gin.Context, detail model.ApiInfoDetail) {
 func reverseProxy(context *gin.Context, jsonData []byte) {
 	director := func(req *http.Request) {
 		req.Host = mockConfig.ProxyHost
-		req.URL.Scheme = mockConfig.Scheme
+		req.URL.Scheme = mockConfig.ProxyScheme
 		req.URL.Host = req.Host
 		req.Body = ioutil.NopCloser(bytes.NewBuffer(jsonData))
 		fmt.Println("proxy api: " + req.URL.String())
