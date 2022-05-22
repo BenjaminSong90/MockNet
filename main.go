@@ -10,9 +10,10 @@ import (
 
 func main() {
 
-	config.LoadProjectConfig()
+	config.ParseProjectConfig()
 
 	var apiInfoList = config.LoadConfigJson(config.PConfig.MockApiPath)
+
 
 	if len(*apiInfoList) == 0 {
 		panic(fmt.Errorf(" mock api is empty!"))

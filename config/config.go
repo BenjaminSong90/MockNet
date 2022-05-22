@@ -38,7 +38,7 @@ var configJsonFormatInfo = `
 
 var PConfig = ProjectConfig{}
 
-func LoadProjectConfig() {
+func ParseProjectConfig() {
 	err := utils.LoadFileJson("config.json", &PConfig)
 	if err != nil {
 		panic(fmt.Errorf("\033[0;40;31m please creat config.json file in project root dir:\n%s \033[0m\n", configJsonFormatInfo))
@@ -58,7 +58,7 @@ func LoadConfigJson(filePathList []string) *[]ApiInfo {
 				if e == nil {
 					apiInfoList = append(apiInfoList, info.ApiInfo...)
 				} else {
-					fmt.Printf("\033[0;40;31m json format error %v\033[0m\n", e)
+					utils.ErrorLogger("json format error %v\n", e)
 				}
 			}
 			return nil
