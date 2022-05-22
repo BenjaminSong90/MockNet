@@ -2,13 +2,13 @@ package middleware
 
 import (
 	"github.com/gin-gonic/gin"
-	"mock_net/model"
+	"mock_net/config"
 	"net/http"
 	"net/http/httputil"
 	"strings"
 )
 
-func NoFundHandle(apiInfoList [] model.ApiInfo) gin.HandlerFunc {
+func NoFundHandle(apiInfoList []config.ApiInfo, projectConfig config.ProjectConfig) gin.HandlerFunc {
 	return func(context *gin.Context) {
 		path := context.Request.URL.Path
 		var hasFond = false
@@ -17,15 +17,12 @@ func NoFundHandle(apiInfoList [] model.ApiInfo) gin.HandlerFunc {
 				hasFond = true
 			}
 		}
-		var mockConfig model.ProjectConfig
-		data, _ := context.Get("project_config")
-		mockConfig, hasProjectConfig := data.(model.ProjectConfig)
 
-		if !hasFond && hasProjectConfig && len(mockConfig.ProxyHost) != 0 && len(mockConfig.ProxyScheme) != 0 {
+		if !hasFond && len(projectConfig.ProxyHost) != 0 && len(projectConfig.ProxyScheme) != 0 {
 
 			director := func(req *http.Request) {
-				req.Host = mockConfig.ProxyHost
-				req.URL.Scheme = mockConfig.ProxyScheme
+				req.Host = projectConfig.ProxyHost
+				req.URL.Scheme = projectConfig.ProxyScheme
 				req.URL.Host = req.Host
 			}
 			proxy := &httputil.ReverseProxy{Director: director}
