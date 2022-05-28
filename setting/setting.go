@@ -117,7 +117,7 @@ func setApiInfo(v *[]ApiInfo) {
 	}
 }
 
-func CheckProxy() bool {
+func CheckProxyInfo() bool {
 	return len(GetProxyHost()) != 0 &&
 		len(GetProxySchema()) != 0
 }

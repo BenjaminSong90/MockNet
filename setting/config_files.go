@@ -8,11 +8,11 @@ import (
 )
 
 type projectConfig struct {
-	ProxyHost   string   `json:"proxy_host"`    //请求代理的host
-	ProxyScheme string   `json:"proxy_scheme"`  //请求代理的host
-	Address     string   `json:"address"`       //服务端启动的address
-	MockApiPath []string `json:"mock_api_path"` //加载 mock api 信息的地址
-	VideoPath   string   `json:"video_path"`    //视频文件地址
+	ProxyHost      string   `json:"proxy_host"`    //请求代理的host
+	ProxyScheme    string   `json:"proxy_scheme"`  //请求代理的host
+	Address        string   `json:"address"`       //服务端启动的address
+	MockApiPath    []string `json:"mock_api_path"` //加载 mock api 信息的地址
+	StaticFilePath string   `json:"file_path"`    //视频文件地址
 }
 
 var configJsonFormatInfo = `
@@ -35,7 +35,7 @@ func loadProjectConfig() {
 	setProxySchema(config.ProxyScheme)
 	setStartAddress(config.Address)
 	setLocalApiInfoPath(config.MockApiPath)
-	setStaticFilePath(config.VideoPath)
+	setStaticFilePath(config.StaticFilePath)
 }
 
 type mockApiInfo struct {

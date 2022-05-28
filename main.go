@@ -15,7 +15,7 @@ func main() {
 	r.Use(middleware.NoFundHandle(setting.GetApiInfo()))
 
 	if len(setting.GetStaticFilePath()) != 0 {
-		r.StaticFS("/static", gin.Dir(setting.GetStaticFilePath(), true))
+		r.StaticFS("/file", gin.Dir(setting.GetStaticFilePath(), true))
 	}
 
 	router.InitApi(r, setting.GetApiInfo())

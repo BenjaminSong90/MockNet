@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"mock_net/router"
 	"mock_net/setting"
@@ -11,7 +12,7 @@ import (
 func NoFundHandle(apiList *[]setting.ApiInfo) gin.HandlerFunc {
 	return func(context *gin.Context) {
 		if !fundApiPath(context.Request.URL.Path, context.Request.Method, apiList) &&
-			setting.CheckProxy(){
+			setting.CheckProxyInfo(){
 
 			router.ReverseProxy(context, func(req *http.Request) {})
 
@@ -22,8 +23,9 @@ func NoFundHandle(apiList *[]setting.ApiInfo) gin.HandlerFunc {
 }
 
 func fundApiPath(requestPath string, method string, apiList *[]setting.ApiInfo) bool {
-	if len(setting.GetStaticFilePath()) != 0 && strings.Contains(requestPath, "/static/") {
-		return false
+	fmt.Println(">>>>>>>"+setting.GetStaticFilePath()+"<<<<<<<"+requestPath)
+	if len(setting.GetStaticFilePath()) != 0 && strings.Contains(requestPath, "/file") {
+		return true
 	}
 	var hasFond = false
 	for _, apiDetail := range *apiList {
