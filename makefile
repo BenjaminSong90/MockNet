@@ -2,7 +2,7 @@
 
 PROJECT= Mock Net
 
-BINARY=MockNet
+BINARY=mock-net
 
 default:
 	@echo ${PROJECT}

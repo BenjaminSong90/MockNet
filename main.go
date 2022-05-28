@@ -12,7 +12,7 @@ func main() {
 
 	config.ParseProjectConfig()
 
-	var apiInfoList = config.LoadConfigJson(config.PConfig.MockApiPath)
+	var apiInfoList = config.LoadApiInfo(config.PConfig.MockApiPath)
 
 
 	if len(*apiInfoList) == 0 {
@@ -21,6 +21,11 @@ func main() {
 
 	r := gin.Default()
 	r.Use(middleware.NoFundHandle(*apiInfoList, config.PConfig))
+
+	if len(config.PConfig.VideoPath) != 0{
+		r.StaticFS("/videos",gin.Dir(config.PConfig.VideoPath, true))
+	}
+
 
 	router.InitApi(r, apiInfoList)
 

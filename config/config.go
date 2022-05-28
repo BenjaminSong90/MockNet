@@ -24,7 +24,7 @@ type ProjectConfig struct {
 	ProxyScheme string   `json:"proxy_scheme"`  //请求代理的host
 	Address     string   `json:"address"`       //服务端启动的address
 	MockApiPath []string `json:"mock_api_path"` //加载 mock api 信息的地址
-
+	VideoPath   string   `json:"video_path"`    //视频文件地址
 }
 
 var configJsonFormatInfo = `
@@ -41,12 +41,12 @@ var PConfig = ProjectConfig{}
 func ParseProjectConfig() {
 	err := utils.LoadFileJson("config.json", &PConfig)
 	if err != nil {
-		panic(fmt.Errorf("\033[0;40;31m please creat config.json file in project root dir:\n%s \033[0m\n", configJsonFormatInfo))
+		panic(fmt.Errorf("\033[0;40;31m %v please creat config.json file in project root dir:\n%s \033[0m\n", err, configJsonFormatInfo))
 	}
 }
 
 //file路径集合 加载json文件 信息
-func LoadConfigJson(filePathList []string) *[]ApiInfo {
+func LoadApiInfo(filePathList []string) *[]ApiInfo {
 
 	var apiInfoList []ApiInfo
 	for _, p := range filePathList {

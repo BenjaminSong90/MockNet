@@ -8,17 +8,11 @@ import (
 	"strings"
 )
 
-func NoFundHandle(apiInfoList []config.ApiInfo, projectConfig config.ProjectConfig) gin.HandlerFunc {
+func NoFundHandle(mockApiList []config.ApiInfo, projectConfig config.ProjectConfig) gin.HandlerFunc {
 	return func(context *gin.Context) {
-		path := context.Request.URL.Path
-		var hasFond = false
-		for _, apiDetail := range apiInfoList {
-			if apiDetail.Path == path && context.Request.Method == strings.ToUpper(apiDetail.Method) {
-				hasFond = true
-			}
-		}
-
-		if !hasFond && len(projectConfig.ProxyHost) != 0 && len(projectConfig.ProxyScheme) != 0 {
+		if checkPath(context.Request.URL.Path, context.Request.Method, mockApiList) &&
+			len(projectConfig.ProxyHost) != 0 &&
+			len(projectConfig.ProxyScheme) != 0 {
 
 			director := func(req *http.Request) {
 				req.Host = projectConfig.ProxyHost
@@ -32,4 +26,18 @@ func NoFundHandle(apiInfoList []config.ApiInfo, projectConfig config.ProjectConf
 		}
 
 	}
+}
+
+func checkPath(requestPath string, method string, mockApiList []config.ApiInfo) bool{
+	if len(config.PConfig.VideoPath) != 0 && strings.Contains(requestPath, "/videos/") {
+		return false
+	}
+	var hasFond = false
+	for _, apiDetail := range mockApiList {
+		if apiDetail.Path == requestPath && method == strings.ToUpper(apiDetail.Method) {
+			hasFond = true
+		}
+	}
+
+	return hasFond
 }
