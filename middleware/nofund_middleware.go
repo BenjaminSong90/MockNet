@@ -2,25 +2,18 @@ package middleware
 
 import (
 	"github.com/gin-gonic/gin"
-	"mock_net/config"
+	"mock_net/router"
+	"mock_net/setting"
 	"net/http"
-	"net/http/httputil"
 	"strings"
 )
 
-func NoFundHandle(mockApiList []config.ApiInfo, projectConfig config.ProjectConfig) gin.HandlerFunc {
+func NoFundHandle(apiList *[]setting.ApiInfo) gin.HandlerFunc {
 	return func(context *gin.Context) {
-		if checkPath(context.Request.URL.Path, context.Request.Method, mockApiList) &&
-			len(projectConfig.ProxyHost) != 0 &&
-			len(projectConfig.ProxyScheme) != 0 {
+		if !fundApiPath(context.Request.URL.Path, context.Request.Method, apiList) &&
+			setting.CheckProxy(){
 
-			director := func(req *http.Request) {
-				req.Host = projectConfig.ProxyHost
-				req.URL.Scheme = projectConfig.ProxyScheme
-				req.URL.Host = req.Host
-			}
-			proxy := &httputil.ReverseProxy{Director: director}
-			proxy.ServeHTTP(context.Writer, context.Request)
+			router.ReverseProxy(context, func(req *http.Request) {})
 
 			context.Abort()
 		}
@@ -28,12 +21,12 @@ func NoFundHandle(mockApiList []config.ApiInfo, projectConfig config.ProjectConf
 	}
 }
 
-func checkPath(requestPath string, method string, mockApiList []config.ApiInfo) bool{
-	if len(config.PConfig.VideoPath) != 0 && strings.Contains(requestPath, "/videos/") {
+func fundApiPath(requestPath string, method string, apiList *[]setting.ApiInfo) bool {
+	if len(setting.GetStaticFilePath()) != 0 && strings.Contains(requestPath, "/static/") {
 		return false
 	}
 	var hasFond = false
-	for _, apiDetail := range mockApiList {
+	for _, apiDetail := range *apiList {
 		if apiDetail.Path == requestPath && method == strings.ToUpper(apiDetail.Method) {
 			hasFond = true
 		}

@@ -5,16 +5,14 @@ import (
 	"time"
 )
 
-
 var ErrorLogger logFunc
 var DebugLogger logFunc
 
 func init() {
 	ErrorLogger = newLogFunc("error")
 	DebugLogger = newLogFunc("debug")
+
 }
-
-
 
 var logColor = map[string]string{
 	"log_color_error": "bright_red",
@@ -49,7 +47,6 @@ var colors = map[string]string{
 	"bright_white":   "37;2",
 }
 
-
 type logFunc func(string, ...interface{})
 
 func newLogFunc(prefix string) func(string, ...interface{}) {
@@ -66,7 +63,6 @@ func newLogFunc(prefix string) func(string, ...interface{}) {
 	}
 }
 
-
 func getLogColor(logName string) string {
 	logColorName := fmt.Sprintf("log_color_%s", logName)
 	colorName := logColor[logColorName]
@@ -74,4 +70,10 @@ func getLogColor(logName string) string {
 	return colors[colorName]
 }
 
+func FormatPanicString(err error, info string) string {
+	color, clear := "", ""
+	color = fmt.Sprintf("\033[0;%sm", "40;31")
+	clear = fmt.Sprintf("\033[%sm", colors["reset"])
+	return fmt.Sprintf("%s %v %s %s \n",color, err, info, clear)
+}
 

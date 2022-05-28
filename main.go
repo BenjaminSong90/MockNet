@@ -1,38 +1,24 @@
 package main
 
 import (
-	"fmt"
 	"github.com/gin-gonic/gin"
-	"mock_net/config"
 	"mock_net/middleware"
 	"mock_net/router"
+	"mock_net/setting"
 )
 
 func main() {
 
-	config.ParseProjectConfig()
-
-	var apiInfoList = config.LoadApiInfo(config.PConfig.MockApiPath)
-
-
-	if len(*apiInfoList) == 0 {
-		panic(fmt.Errorf(" mock api is empty!"))
-	}
+	setting.LoadLocalConfig()
 
 	r := gin.Default()
-	r.Use(middleware.NoFundHandle(*apiInfoList, config.PConfig))
+	r.Use(middleware.NoFundHandle(setting.GetApiInfo()))
 
-	if len(config.PConfig.VideoPath) != 0{
-		r.StaticFS("/videos",gin.Dir(config.PConfig.VideoPath, true))
+	if len(setting.GetStaticFilePath()) != 0 {
+		r.StaticFS("/static", gin.Dir(setting.GetStaticFilePath(), true))
 	}
 
+	router.InitApi(r, setting.GetApiInfo())
 
-	router.InitApi(r, apiInfoList)
-
-	address := "8080"
-	if len(config.PConfig.Address) != 0 {
-		address = config.PConfig.Address
-	}
-
-	r.Run(address) // listen and serve on 0.0.0.0:8080 (for windows "localhost:8080")
+	r.Run(setting.GetStartAddress()) // listen and serve on 0.0.0.0:8080 (for windows "localhost:8080")
 }
