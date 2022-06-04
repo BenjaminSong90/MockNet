@@ -2,7 +2,6 @@ package server
 
 import (
 	"context"
-	"sync"
 )
 
 var (
@@ -16,26 +15,19 @@ func init() {
 }
 
 func StartServer(ctx context.Context)  {
-	var wg sync.WaitGroup
-	go func(c context.Context) {
-		wg.Add(1)
-		defer wg.Done()
-		for{
-			var container  = Container{}
-			container.Start(New())
-			select {
-				case reStart :=<- stopChannel:
-					container.CloseWithWait()
-					if !reStart {
-						return
-					}
-				case <- c.Done():
-					container.CloseWithWait()
-					return
+	for{
+		var container  = Container{}
+		container.Start(New())
+		select {
+		case reStart :=<- stopChannel:
+			container.CloseWithWait()
+			if !reStart {
+				return
 			}
-
+		case <- ctx.Done():
+			container.CloseWithWait()
+			return
 		}
-	}(ctx)
-	<- ctx.Done()
-	wg.Wait()
+
+	}
 }

@@ -122,7 +122,11 @@ func CheckProxyInfo() bool {
 		len(GetProxySchema()) != 0
 }
 
-func LoadLocalConfig() {
+func LoadProjectConfig() {
 	loadProjectConfig()
+
+}
+
+func LoadApiInfo()  {
 	loadApiInfo(GetLocalApiInfoPath())
 }

@@ -32,7 +32,7 @@ func (server *Server) Run(ctx context.Context) error  {
 
 
 func (server *Server) Start() error {
-	setting.LoadLocalConfig()
+	setting.LoadApiInfo()
 
 	r := gin.New()
 
