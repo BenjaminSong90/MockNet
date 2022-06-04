@@ -3,7 +3,7 @@ package middleware
 import (
 	"fmt"
 	"github.com/gin-gonic/gin"
-	"mock_net/router"
+	"mock_net/server/router"
 	"mock_net/setting"
 	"net/http"
 	"strings"
