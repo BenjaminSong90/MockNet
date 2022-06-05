@@ -8,8 +8,14 @@ import (
 )
 
 func main() {
+
 	setting.LoadProjectConfig()
 	ctx, cancel := context.WithCancel(context.Background())
+	if setting.IsFileWatcherOpen() {
+		server.InitLimit()
+		server.Watch(ctx)
+	}
+
 	go utils.ListenBreak(cancel)
 	server.StartServer(ctx)
 }
