@@ -1,7 +1,6 @@
 package middleware
 
 import (
-	"fmt"
 	"github.com/gin-gonic/gin"
 	"mock_net/server/router"
 	"mock_net/setting"
@@ -23,7 +22,6 @@ func NoFundHandle(apiList *[]setting.ApiInfo) gin.HandlerFunc {
 }
 
 func fundApiPath(requestPath string, method string, apiList *[]setting.ApiInfo) bool {
-	fmt.Println(">>>>>>>"+setting.GetStaticFilePath()+"<<<<<<<"+requestPath)
 	if len(setting.GetStaticFilePath()) != 0 && strings.Contains(requestPath, "/file") {
 		return true
 	}

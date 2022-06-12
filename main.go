@@ -13,6 +13,7 @@ func main() {
 	ctx, _ := context.WithCancel(context.Background())
 
 	manager := graceful.InitManager(ctx)
+	fw := server.InitFileWatcher(ctx)
 
 	manager.AddRunningJob(func(ctx context.Context) error {
 		server.StartServer(ctx)
@@ -20,10 +21,16 @@ func main() {
 	})
 
 	manager.AddRunningJob(func(ctx context.Context) error {
-		if setting.IsFileWatcherOpen() {//TODO 需要优化关闭方式
+		localApiInfoPth := setting.GetLocalApiInfoPath()
+		if setting.IsFileWatcherOpen() && len(localApiInfoPth) != 0{
 			server.InitLimit()
-			server.Watch(ctx)
+			fw.Watch(localApiInfoPth)
 		}
+		return nil
+	})
+
+	manager.AddShutdownJob(func() error {
+		fw.Close()
 		return nil
 	})
 
