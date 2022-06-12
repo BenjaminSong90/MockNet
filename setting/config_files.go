@@ -19,10 +19,19 @@ type projectConfig struct {
 
 var configJsonFormatInfo = `
 	{
-	  "proxy_host": "host",
-	  "proxy_scheme": "scheme",
+	  "proxy_host": "www.xxx.com",
+	  "proxy_scheme": "https",
 	  "address": ":8080",
-	  "mock_api_path":[""]
+	  "mock_api_path": [
+		"/xx/xx/xx/api_folder"
+	  ],
+	  "file_path": "/xx/xx/xx/static_file_folder",
+	  "file_watcher": true,
+	  "file_watcher_config": {
+		"valid_ext": ".json",
+		"no_reload_ext": ".tpl, .tmpl, .html",
+		"ignored_folder" : ""
+	  }
 	}
 `
 
