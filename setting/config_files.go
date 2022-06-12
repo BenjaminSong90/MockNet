@@ -3,7 +3,7 @@ package setting
 import (
 	"fmt"
 	"io/fs"
-	"mock_net/utils"
+	"mocknet/utils"
 	"path/filepath"
 )
 

@@ -1,4 +1,4 @@
-module mock_net
+module mocknet
 
 go 1.16
 

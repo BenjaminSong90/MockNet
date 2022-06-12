@@ -4,11 +4,21 @@ MockNet 是对服务端的mock工具，帮助前端开发初期解决数据mock�
 
 **mock_config.json**工具的配置工具
 ```json
-{
-  "proxy_host": "www.proxy_host.com",//代理的host
-  "address": ":8080",//本地服务启动的端口
-  "proxy_scheme": "https"//代理的scheme
-}
+	{
+	  "proxy_host": "www.xxx.com",
+	  "proxy_scheme": "https",
+	  "address": ":8080",
+	  "mock_api_path": [
+		"/xx/xx/xx/api_folder"
+	  ],
+	  "file_path": "/xx/xx/xx/static_file_folder",
+	  "file_watcher": true,
+	  "file_watcher_config": {
+		"valid_ext": ".json",
+		"no_reload_ext": ".tpl, .tmpl, .html",
+		"ignored_folder" : ""
+	  }
+	}
 ```
 
 **api.json** 是mock api返回数据

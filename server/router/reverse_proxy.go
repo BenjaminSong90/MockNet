@@ -2,7 +2,7 @@ package router
 
 import (
 	"github.com/gin-gonic/gin"
-	"mock_net/setting"
+	"mocknet/setting"
 	"net/http"
 	"net/http/httputil"
 )

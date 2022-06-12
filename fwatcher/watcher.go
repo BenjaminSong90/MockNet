@@ -1,21 +1,29 @@
-package server
+package fwatcher
 
 import (
 	"context"
-	"mock_net/setting"
-	"mock_net/utils"
+	"github.com/howeyc/fsnotify"
+	"mocknet/setting"
+	"mocknet/utils"
 	"os"
 	"path/filepath"
 	"strings"
 	"sync"
-
-	"github.com/howeyc/fsnotify"
 )
 
+var (
+	FileChangeChannel chan string
+)
+
+func init() {
+	FileChangeChannel = make(chan string, 1000)
+}
+
 type FileWatcher struct {
-	lock     *sync.RWMutex
-	watchers []*fsnotify.Watcher
-	ctx      context.Context
+	lock      *sync.RWMutex
+	watchers  []*fsnotify.Watcher
+	ctx       context.Context
+	ctxCancel context.CancelFunc
 }
 
 var fileWatcher *FileWatcher
@@ -32,12 +40,18 @@ func (fw *FileWatcher) watchFolder(path string) (*fsnotify.Watcher, error) {
 		for {
 			select {
 			case ev := <-watcher.Event:
-				if fw.isWatchedFile(ev.Name) {
-					utils.DebugLogger("sending event %s", ev)
-					startChannel <- ev.String()
+				if ev != nil {
+					utils.DebugLogger("sending event %s", ev.String())
+					if fw.isWatchedFile(ev.Name) {
+						FileChangeChannel <- ev.String()
+					}
+				} else {
+					utils.DebugLogger("sending empty event")
 				}
 			case err := <-watcher.Error:
-				utils.DebugLogger("error: %s", err)
+				if err != nil {
+					utils.DebugLogger("watcher error: %s", err)
+				}
 			case <-c.Done():
 				goto OutLoop
 			}
@@ -54,10 +68,11 @@ func (fw *FileWatcher) watchFolder(path string) (*fsnotify.Watcher, error) {
 	return nil, err
 }
 
-func (fw *FileWatcher) Watch(paths []string) {
+func (fw *FileWatcher) Watch(paths []string) []error {
 	if len(paths) == 0 {
 		panic("Api file paths is not empty")
 	}
+	errs := make([]error, 0)
 	for _, root := range paths {
 		filepath.Walk(root, func(path string, info os.FileInfo, err error) error {
 			if info.IsDir() {
@@ -73,6 +88,7 @@ func (fw *FileWatcher) Watch(paths []string) {
 				w, err := fw.watchFolder(path)
 				if err != nil {
 					utils.ErrorLogger("%s error: %s", path, err)
+					errs = append(errs, err)
 				} else {
 					fw.lock.Lock()
 					fw.watchers = append(fw.watchers, w)
@@ -83,9 +99,12 @@ func (fw *FileWatcher) Watch(paths []string) {
 			return err
 		})
 	}
+	return errs
 }
 
-func (fw *FileWatcher) Close() {
+func (fw *FileWatcher) Close() []error {
+	utils.DebugLogger("Start close file watcher")
+	fileWatcher.ctxCancel()
 	var errs []error
 	for _, w := range fw.watchers {
 		err := w.Close()
@@ -93,16 +112,20 @@ func (fw *FileWatcher) Close() {
 			errs = append(errs, err)
 		}
 	}
-	utils.DebugLogger("Close file watcher")
+	utils.DebugLogger("End close file watcher")
+	close(FileChangeChannel)
+	return errs
 }
 
-func InitFileWatcher(ctx context.Context) *FileWatcher {
+func InitFileWatcher() *FileWatcher {
 	startOnce.Do(func() {
 		fileWatcher = &FileWatcher{
 			lock:     &sync.RWMutex{},
-			ctx:      ctx,
 			watchers: make([]*fsnotify.Watcher, 0),
 		}
+		ctx,cancel := context.WithCancel(context.Background())
+		fileWatcher.ctx = ctx
+		fileWatcher.ctxCancel = cancel
 	})
 
 	return fileWatcher

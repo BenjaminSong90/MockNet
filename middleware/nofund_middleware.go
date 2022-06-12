@@ -2,8 +2,8 @@ package middleware
 
 import (
 	"github.com/gin-gonic/gin"
-	"mock_net/server/router"
-	"mock_net/setting"
+	"mocknet/server/router"
+	"mocknet/setting"
 	"net/http"
 	"strings"
 )

@@ -6,8 +6,8 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
 	"io/ioutil"
-	"mock_net/setting"
-	"mock_net/utils"
+	"mocknet/setting"
+	"mocknet/utils"
 	"net/http"
 	"strings"
 )

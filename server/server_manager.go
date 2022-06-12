@@ -2,19 +2,18 @@ package server
 
 import (
 	"context"
-	"mock_net/setting"
-	"mock_net/utils"
+	"mocknet/fwatcher"
+	"mocknet/setting"
+	"mocknet/utils"
 	"strings"
 	"time"
 )
 
 var (
-	startChannel chan string
 	stopChannel  chan bool
 )
 
 func init() {
-	startChannel = make(chan string, 1000)
 	stopChannel = make(chan bool)
 }
 
@@ -28,7 +27,7 @@ func StartServer(ctx context.Context)  {
 			if !reStart {
 				return
 			}
-		case eventName :=<- startChannel:
+		case eventName :=<- fwatcher.FileChangeChannel:
 
 			time.Sleep(1000 * time.Millisecond)
 
@@ -50,7 +49,7 @@ func StartServer(ctx context.Context)  {
 func flushEvents() {
 	for {
 		select {
-		case eventName := <-startChannel:
+		case eventName := <- fwatcher.FileChangeChannel:
 			utils.DebugLogger("receiving event %s", eventName)
 		default:
 			return

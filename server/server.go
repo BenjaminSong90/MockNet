@@ -5,9 +5,9 @@ import (
 	"github.com/gin-gonic/gin"
 	"golang.org/x/sync/errgroup"
 	"log"
-	"mock_net/middleware"
-	"mock_net/server/router"
-	"mock_net/setting"
+	"mocknet/middleware"
+	"mocknet/server/router"
+	"mocknet/setting"
 	"net/http"
 )
 
