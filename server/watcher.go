@@ -40,14 +40,13 @@ func watchFolder(path string, ctx context.Context) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	utils.DebugLogger(">>>>>>>watchFolder<<<<<<")
+	defer watcher.Close()
+	<- ctx.Done()
 }
 
 func Watch(ctx context.Context) {
-	utils.DebugLogger(">>>>>>>Watch 1<<<<<<")
 	paths := setting.GetLocalApiInfoPath()
 	for _, root := range paths {
-		utils.DebugLogger(">>>>>>>Watch 2<<<<<<"+root)
 		filepath.Walk(root, func(path string, info os.FileInfo, err error) error {
 			if info.IsDir() {
 				if len(path) > 1 && strings.HasPrefix(filepath.Base(path), ".") {
@@ -59,7 +58,7 @@ func Watch(ctx context.Context) {
 					return filepath.SkipDir
 				}
 
-				watchFolder(path, ctx)
+				go watchFolder(path, ctx)
 			}
 
 			return err

@@ -9,7 +9,7 @@ default:
 
 clean:
 	@go clean
-	rm ${BINARY}*
+	rm -rf tmp
 
 check:
 	@go fmt

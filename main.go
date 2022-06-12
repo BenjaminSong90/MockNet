@@ -2,20 +2,33 @@ package main
 
 import (
 	"context"
+	"mock_net/graceful"
 	"mock_net/server"
 	"mock_net/setting"
-	"mock_net/utils"
 )
 
 func main() {
 
 	setting.LoadProjectConfig()
-	ctx, cancel := context.WithCancel(context.Background())
-	if setting.IsFileWatcherOpen() {
-		server.InitLimit()
-		server.Watch(ctx)
-	}
+	ctx, _ := context.WithCancel(context.Background())
 
-	go utils.ListenBreak(cancel)
-	server.StartServer(ctx)
+	manager := graceful.InitManager(ctx)
+
+	manager.AddRunningJob(func(ctx context.Context) error {
+		server.StartServer(ctx)
+		return nil
+	})
+
+	manager.AddRunningJob(func(ctx context.Context) error {
+		if setting.IsFileWatcherOpen() {//TODO 需要优化关闭方式
+			server.InitLimit()
+			server.Watch(ctx)
+		}
+		return nil
+	})
+
+
+	<-manager.Done()
+
+
 }
