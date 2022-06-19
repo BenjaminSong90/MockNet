@@ -1,6 +1,7 @@
 package setting
 
 import (
+	"encoding/json"
 	"fmt"
 	"io/fs"
 	"mocknet/utils"
@@ -97,16 +98,25 @@ func loadApiInfo(filePathList []string) {
 		})
 	}
 
-	//根据 path 和 method来过滤 Api 信息
-	filterMap := make(map[string]mockApi)
+	//concat api info
+	concatMap := make(map[string]mockApi)
 	for _, info := range apiInfoList {
-		filterMap[info.Path+info.Method] = info
+		if v,ok := concatMap[info.Path+info.Method];ok && !info.IsRestful{
+			for nk, nv:= range info.Data{
+				v.Data[nk] = nv
+			}
+		} else {
+			concatMap[info.Path+info.Method] = info
+		}
+
 	}
 
 	var result []ApiInfo
-	for _, v := range filterMap {
+	for _, v := range concatMap {
 		result = append(result, v.toApiInfo())
 	}
+	jsonData,_ := json.Marshal(result)
+	fmt.Println(string(jsonData))
 
 	if len(result) == 0 {
 		panic(fmt.Errorf(" mock api is empty!"))
