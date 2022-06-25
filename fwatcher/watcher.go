@@ -3,8 +3,8 @@ package fwatcher
 import (
 	"context"
 	"github.com/howeyc/fsnotify"
+	"mocknet/logger"
 	"mocknet/setting"
-	"mocknet/utils"
 	"os"
 	"path/filepath"
 	"strings"
@@ -41,16 +41,16 @@ func (fw *FileWatcher) watchFolder(path string) (*fsnotify.Watcher, error) {
 			select {
 			case ev := <-watcher.Event:
 				if ev != nil {
-					utils.DebugLogger("sending event %s", ev.String())
+					logger.DebugLogger("sending event %s", ev.String())
 					if fw.isWatchedFile(ev.Name) {
 						FileChangeChannel <- ev.String()
 					}
 				} else {
-					utils.DebugLogger("sending empty event")
+					logger.DebugLogger("sending empty event")
 				}
 			case err := <-watcher.Error:
 				if err != nil {
-					utils.DebugLogger("watcher error: %s", err)
+					logger.DebugLogger("watcher error: %s", err)
 				}
 			case <-c.Done():
 				goto OutLoop
@@ -59,7 +59,7 @@ func (fw *FileWatcher) watchFolder(path string) (*fsnotify.Watcher, error) {
 	OutLoop:
 	}(fw.ctx)
 
-	utils.DebugLogger("Watching %s", path)
+	logger.DebugLogger("Watching %s", path)
 	err = watcher.Watch(path)
 
 	if err == nil {
@@ -81,13 +81,13 @@ func (fw *FileWatcher) Watch(paths []string) []error {
 				}
 
 				if fw.isIgnoredFolder(path) {
-					utils.DebugLogger("Ignoring %s", path)
+					logger.DebugLogger("Ignoring %s", path)
 					return filepath.SkipDir
 				}
 
 				w, err := fw.watchFolder(path)
 				if err != nil {
-					utils.ErrorLogger("%s error: %s", path, err)
+					logger.ErrorLogger("%s error: %s", path, err)
 					errs = append(errs, err)
 				} else {
 					fw.lock.Lock()
@@ -103,7 +103,7 @@ func (fw *FileWatcher) Watch(paths []string) []error {
 }
 
 func (fw *FileWatcher) Close() []error {
-	utils.DebugLogger("Start close file watcher")
+	logger.DebugLogger("Start close file watcher")
 	fileWatcher.ctxCancel()
 	var errs []error
 	for _, w := range fw.watchers {
@@ -112,7 +112,7 @@ func (fw *FileWatcher) Close() []error {
 			errs = append(errs, err)
 		}
 	}
-	utils.DebugLogger("End close file watcher")
+	logger.DebugLogger("End close file watcher")
 	close(FileChangeChannel)
 	return errs
 }

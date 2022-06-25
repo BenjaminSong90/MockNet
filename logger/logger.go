@@ -1,4 +1,4 @@
-package utils
+package logger
 
 import (
 	"fmt"
@@ -71,9 +71,8 @@ func getLogColor(logName string) string {
 }
 
 func FormatPanicString(err error, info string) string {
-	color, clear := "", ""
-	color = fmt.Sprintf("\033[0;%sm", "40;31")
-	clear = fmt.Sprintf("\033[%sm", colors["reset"])
+	color := fmt.Sprintf("\033[0;%sm", "40;31")
+	clear := fmt.Sprintf("\033[%sm", colors["reset"])
 	return fmt.Sprintf("%s %v %s %s \n",color, err, info, clear)
 }
 

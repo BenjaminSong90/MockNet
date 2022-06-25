@@ -5,7 +5,7 @@ import (
 	"io/ioutil"
 )
 
-//加载json文件 信息
+//load local json
 func LoadFileJson(filePath string, v interface{}) (err error) {
 
 	jsonData, err := ioutil.ReadFile(filePath)

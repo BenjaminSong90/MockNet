@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/fs"
+	"mocknet/logger"
 	"mocknet/utils"
 	"path/filepath"
 )
@@ -41,7 +42,7 @@ func loadProjectConfig() {
 	err := utils.LoadFileJson("config.json", &config)
 	if err != nil {
 
-		panic(utils.FormatPanicString(err, fmt.Sprintf("please creat config.json file in project root dir:\n%s", configJsonFormatInfo)))
+		panic(logger.FormatPanicString(err, fmt.Sprintf("please creat config.json file in project root dir:\n%s", configJsonFormatInfo)))
 	}
 	setProxyHost(config.ProxyHost)
 	setProxySchema(config.ProxyScheme)
@@ -91,7 +92,7 @@ func loadApiInfo(filePathList []string) {
 				if e == nil {
 					apiInfoList = append(apiInfoList, info.ApiInfo...)
 				} else {
-					utils.ErrorLogger("json format error %v\n", e)
+					logger.ErrorLogger("json format error %v\n", e)
 				}
 			}
 			return nil

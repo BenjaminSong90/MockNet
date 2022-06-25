@@ -3,8 +3,8 @@ package server
 import (
 	"context"
 	"mocknet/fwatcher"
+	"mocknet/logger"
 	"mocknet/setting"
-	"mocknet/utils"
 	"strings"
 	"time"
 )
@@ -50,7 +50,7 @@ func flushEvents() {
 	for {
 		select {
 		case eventName := <- fwatcher.FileChangeChannel:
-			utils.DebugLogger("receiving event %s", eventName)
+			logger.DebugLogger("receiving event %s", eventName)
 		default:
 			return
 		}
