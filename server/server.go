@@ -46,7 +46,7 @@ func (server *Server) Start() error {
 
 	r.Use(gin.Logger())
 	r.Use(gin.Recovery())
-	r.Use(middleware.NoFundHandle(setting.GetApiInfo()))
+	r.Use(middleware.NoFundHandle())
 
 	if len(setting.GetStaticFilePath()) != 0 {
 		r.StaticFS("/file", gin.Dir(setting.GetStaticFilePath(), true))
