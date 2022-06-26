@@ -23,7 +23,7 @@ func GetHandler(detail setting.ApiInfo) gin.HandlerFunc{
 
 func DeleteHandler(detail setting.ApiInfo) gin.HandlerFunc{
 	return func(context *gin.Context) {
-		context.JSON(http.StatusOK, detail.Data[context.Request.URL.Path])
+		context.JSON(http.StatusOK, detail.Data[context.Request.RequestURI])
 	}
 }
 
@@ -45,7 +45,7 @@ func PutHandler(detail setting.ApiInfo) gin.HandlerFunc{
 func handleBodyRequest(context *gin.Context, detail setting.ApiInfo) {
 
 	if detail.Restful {
-		context.JSON(http.StatusOK, detail.Data[context.Request.URL.Path])
+		context.JSON(http.StatusOK, detail.Data[context.Request.RequestURI])
 	} else {
 		switch context.ContentType() {
 		case binding.MIMEJSON:
