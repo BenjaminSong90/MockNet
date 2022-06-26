@@ -52,7 +52,7 @@ MockNet 是对服务端的mock工具，帮助前端开发初期解决数据mock�
       "method": "POST",
       "is_restful": true,
       "data": {
-        "/test2": {
+        "/test2?t=1": {
           "a": "aa",
           "nb": "real nb"
         }
@@ -61,7 +61,7 @@ MockNet 是对服务端的mock工具，帮助前端开发初期解决数据mock�
   ]
 }
 ```
-当api的配置信息为 restful的时候，会根据api的path信息直接返回配置的数据，几直接去读data下的path对应的数据，不存在的时候会返回空。
+当api的配置信息为 restful的时候，会根据api的uri信息直接返回配置的数据，不存在的时候会返回空。
 如果配置信息 不是restful的时候，会读取body中的key_name设置的值，如果key_name为空的时候，会代理请求远端服务，如果body中没有key_name设置的值，也会代理请求远端服务
 
 
