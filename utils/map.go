@@ -1,6 +1,8 @@
 package utils
 
-import "fmt"
+import (
+	"fmt"
+)
 
 //flat map info
 func FlatMap(originMap map[string]interface{}, resultMap map[string]interface{}) {
@@ -34,5 +36,11 @@ func FlatArray(anArray []interface{}, resultMap map[string]interface{}) {
 		default:
 			fmt.Println("Index", i, ":", concreteVal)
 		}
+	}
+}
+
+func MapStringCopy(dst map[string]interface{}, src map[string]interface{}){
+	for k,v := range src{
+		dst[k] = v
 	}
 }
