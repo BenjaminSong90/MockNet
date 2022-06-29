@@ -103,21 +103,21 @@ func setStaticFilePath(v string) {
 	globalSetting.setKVOrDefault("static_path", v)
 }
 
-func GetApiInfo() *[]ApiInfo {
+func GetApiInfo() *[]*ApiInfo {
 	ai := globalSetting["api_info"]
-	apiInfo, ok := ai.([]ApiInfo)
+	apiInfo, ok := ai.(*[]*ApiInfo)
 	if ok {
-		return &apiInfo
+		return apiInfo
 	} else {
-		return &[]ApiInfo{}
+		return &[]*ApiInfo{}
 	}
 }
 
-func setApiInfo(v *[]ApiInfo) {
+func setApiInfo(v *[]*ApiInfo) {
 	if v != nil && len(*v) != 0 {
-		globalSetting["api_info"] = *v
+		globalSetting["api_info"] = v
 	} else {
-		globalSetting["api_info"] = []ApiInfo{}
+		globalSetting["api_info"] = &[]*ApiInfo{}
 	}
 }
 

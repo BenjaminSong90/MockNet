@@ -111,7 +111,7 @@ func loadApiInfo(filePathList []string) {
 
 	}
 
-	var result []ApiInfo
+	var result []*ApiInfo
 	for _, v := range concatMap {
 		result = append(result, v.toApiInfo())
 	}
@@ -124,7 +124,7 @@ func loadApiInfo(filePathList []string) {
 	setApiInfo(&result)
 }
 
-func (mockApi mockApi) toApiInfo() ApiInfo {
+func (mockApi mockApi) toApiInfo() *ApiInfo {
 	apiInfo := ApiInfo{}
 
 	apiInfo.Method = mockApi.Method
@@ -133,5 +133,5 @@ func (mockApi mockApi) toApiInfo() ApiInfo {
 	apiInfo.Path = mockApi.Path
 	apiInfo.Restful = mockApi.IsRestful
 
-	return apiInfo
+	return &apiInfo
 }

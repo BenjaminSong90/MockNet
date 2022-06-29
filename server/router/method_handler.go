@@ -28,7 +28,7 @@ import (
 
 type MethodHandlerFunc func(detail setting.ApiInfo) gin.HandlerFunc
 
-func GetHandler(detail setting.ApiInfo) gin.HandlerFunc{
+func GetHandler(detail *setting.ApiInfo) gin.HandlerFunc{
 	return func(context *gin.Context) {
 		logger.DebugLogger("request full path"+context.Request.RequestURI)
 		handleRequest(context, detail)
@@ -36,20 +36,20 @@ func GetHandler(detail setting.ApiInfo) gin.HandlerFunc{
 	}
 }
 
-func DeleteHandler(detail setting.ApiInfo) gin.HandlerFunc{
+func DeleteHandler(detail *setting.ApiInfo) gin.HandlerFunc{
 	return func(context *gin.Context) {
 		handleRequest(context, detail)
 		//context.JSON(http.StatusOK, detail.Data[context.Request.RequestURI])
 	}
 }
 
-func PostHandler(detail setting.ApiInfo) gin.HandlerFunc{
+func PostHandler(detail *setting.ApiInfo) gin.HandlerFunc{
 	return func(context *gin.Context) {
 		handleBodyRequest(context, detail)
 	}
 }
 
-func PutHandler(detail setting.ApiInfo) gin.HandlerFunc{
+func PutHandler(detail *setting.ApiInfo) gin.HandlerFunc{
 	return func(context *gin.Context) {
 		handleBodyRequest(context, detail)
 	}
@@ -58,7 +58,7 @@ func PutHandler(detail setting.ApiInfo) gin.HandlerFunc{
 
 
 //处理有body的quest
-func handleBodyRequest(context *gin.Context, detail setting.ApiInfo) {
+func handleBodyRequest(context *gin.Context, detail *setting.ApiInfo) {
 
 	if detail.Restful {
 		handleRequest(context , detail)
@@ -84,39 +84,7 @@ func handleBodyRequest(context *gin.Context, detail setting.ApiInfo) {
 	}
 }
 
-//处理content type 为 application/json 的类型
-//func handleJsonType(context *gin.Context, detail setting.ApiInfo) {
-//	jsonData, err := ioutil.ReadAll(context.Request.Body)
-//	if err != nil {
-//		context.JSON(http.StatusOK, gin.H{"status": "error", "message": err})
-//		return
-//	}
-//	jsonBody := make(map[string]interface{})
-//	err = json.Unmarshal(jsonData, &jsonBody)
-//	if err != nil {
-//		context.JSON(http.StatusOK, gin.H{"status": "error", "message": err})
-//		return
-//	}
-//	kvMap := make(map[string]interface{})
-//	utils.FlatMap(jsonBody, kvMap)
-//	functionCode, exist := kvMap[detail.KeyName]
-//	if exist {
-//		data, exist := detail.Data[functionCode.(string)]
-//		if exist {
-//			context.JSON(http.StatusOK, data)
-//		} else {
-//			ReverseProxy(context, func(req *http.Request) {
-//				req.Body = ioutil.NopCloser(bytes.NewBuffer(jsonData))
-//			})
-//		}
-//	} else {
-//		ReverseProxy(context, func(req *http.Request) {
-//			req.Body = ioutil.NopCloser(bytes.NewBuffer(jsonData))
-//		})
-//	}
-//}
-
-func handleRequest(context *gin.Context, detail setting.ApiInfo){
+func handleRequest(context *gin.Context, detail *setting.ApiInfo){
 	if detail.Restful {
 
 		ks := collectKey(context, detail)
@@ -160,7 +128,7 @@ func handleRequest(context *gin.Context, detail setting.ApiInfo){
 	}
 }
 
-func collectKey(context *gin.Context, detail setting.ApiInfo)[]string{
+func collectKey(context *gin.Context, detail *setting.ApiInfo)[]string{
 	result := make([]string ,0)
 	if len(detail.KeyName) == 0{
 		return result
