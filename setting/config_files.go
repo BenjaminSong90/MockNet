@@ -1,7 +1,6 @@
 package setting
 
 import (
-	"encoding/json"
 	"fmt"
 	"io/fs"
 	"mocknet/logger"
@@ -116,8 +115,7 @@ func loadApiInfo(filePathList []string) {
 	for _, v := range concatMap {
 		result = append(result, v.toApiInfo())
 	}
-	jsonData,_ := json.Marshal(result)
-	fmt.Println(string(jsonData))
+
 
 	if len(result) == 0 {
 		panic(fmt.Errorf(" mock api is empty!"))

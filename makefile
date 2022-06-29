@@ -9,7 +9,7 @@ default:
 
 clean:
 	@go clean
-	rm -rf tmp
+	@rm -rf tmp
 
 check:
 	@go fmt
@@ -18,5 +18,5 @@ check:
 build-windows-amd64:
 	CGO_ENABLED=0 GOOS=windows GOARCH=amd64 go build -o ./tmp/${BINARY}.exe main.go
 
-build-macos-intel:
+macos-intel:
 	CGO_ENABLED=0 GOOS=darwin GOARCH=amd64 go build -o ./tmp/${BINARY} main.go

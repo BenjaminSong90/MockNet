@@ -39,8 +39,8 @@ func (fw *FileWatcher) watchFolder(path string) (*fsnotify.Watcher, error) {
 	go func(c context.Context) {
 		for {
 			select {
-			case ev := <-watcher.Event:
-				if ev != nil {
+			case ev,ok := <-watcher.Event:
+				if ok {
 					logger.DebugLogger("sending event %s", ev.String())
 					if fw.isWatchedFile(ev.Name) {
 						FileChangeChannel <- ev.String()
@@ -48,8 +48,8 @@ func (fw *FileWatcher) watchFolder(path string) (*fsnotify.Watcher, error) {
 				} else {
 					logger.DebugLogger("sending empty event")
 				}
-			case err := <-watcher.Error:
-				if err != nil {
+			case err,ok := <-watcher.Error:
+				if ok {
 					logger.DebugLogger("watcher error: %s", err)
 				}
 			case <-c.Done():
