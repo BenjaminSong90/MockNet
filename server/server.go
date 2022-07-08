@@ -36,14 +36,6 @@ func (server *Server) Start() error {
 
 	r := gin.New()
 
-	r.GET("/reload", func(context *gin.Context) {
-		go func() {
-			stopChannel<-true
-		}()
-		result := map[string]string{}
-		context.JSON(http.StatusOK, result)
-	})
-
 	r.Use(gin.Logger())
 	r.Use(gin.Recovery())
 	r.Use(middleware.NoFundHandle())
