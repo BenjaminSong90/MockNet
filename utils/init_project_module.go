@@ -8,8 +8,8 @@ import (
 )
 
 var defaultConfigInfo = "{\n  " +
-		"\"proxy_host\": \"www.baidu.com\",\n  " +
-		"\"proxy_scheme\": \"https\",\n  " +
+		"\"proxy_host\": \"proxy_host\",\n  " +
+		"\"proxy_scheme\": \"proxy_scheme\",\n  " +
 		"\"address\": \":8080\",\n  " +
 		"\"mock_api_path\": [\n    " +
 			"\"%s\"\n  " +
