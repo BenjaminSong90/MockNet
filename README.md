@@ -1,8 +1,9 @@
 # MockNet
 MockNet 是对服务端的mock工具，帮助前端开发初期解决数据mock的问题，调用的api不存在的时候,会根据本地的proxy配置信息来调用远端的api
 
+第一次运行的时候会创建默认的配置和默认的api，但是如果已经存在 **config.json** 不会创建默认的api
 
-**mock_config.json**工具的配置工具
+**config.json**工具的配置工具
 ```json
 	{
 	  "proxy_host": "www.xxx.com",

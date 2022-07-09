@@ -6,10 +6,11 @@ import (
 	"mocknet/graceful"
 	"mocknet/server"
 	"mocknet/setting"
+	"mocknet/utils"
 )
 
 func main() {
-
+	utils.CheckModuleOrCreate()
 	setting.LoadProjectConfig()
 	ctx, _ := context.WithCancel(context.Background())
 
