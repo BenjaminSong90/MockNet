@@ -18,30 +18,12 @@ type projectConfig struct {
 	FileWatcherConfig map[string]string `json:"file_watcher_config"` //文件变化通知配置信息
 }
 
-var configJsonFormatInfo = `
-	{
-	  "proxy_host": "www.xxx.com",
-	  "proxy_scheme": "https",
-	  "address": ":8080",
-	  "mock_api_path": [
-		"/xx/xx/xx/api_folder"
-	  ],
-	  "file_path": "/xx/xx/xx/static_file_folder",
-	  "file_watcher": true,
-	  "file_watcher_config": {
-		"valid_ext": ".json",
-		"no_reload_ext": ".tpl, .tmpl, .html",
-		"ignored_folder" : ""
-	  }
-	}
-`
-
 func loadProjectConfig() {
 	config := projectConfig{}
 	err := utils.LoadFileJson("config.json", &config)
 	if err != nil {
 
-		panic(logger.FormatPanicString(err, fmt.Sprintf("please creat config.json file in project root dir:\n%s", configJsonFormatInfo)))
+		panic(logger.FormatPanicString(err, fmt.Sprintf("config.json parse is fail")))
 	}
 	setProxyHost(config.ProxyHost)
 	setProxySchema(config.ProxyScheme)
@@ -49,17 +31,17 @@ func loadProjectConfig() {
 	setLocalApiInfoPath(config.MockApiPath)
 	setStaticFilePath(config.StaticFilePath)
 	setFileWatcherOpen(config.FileWatcher)
-	validExt,ok := config.FileWatcherConfig["valid_ext"]
+	validExt, ok := config.FileWatcherConfig["valid_ext"]
 	if ok {
 		setFileWatcherValidExt(validExt)
 	}
 
-	noReloadExt,ok := config.FileWatcherConfig["no_reload_ext"]
+	noReloadExt, ok := config.FileWatcherConfig["no_reload_ext"]
 	if ok {
 		setFileWatcherNoReloadExt(noReloadExt)
 	}
 
-	ignoredFolder,ok := config.FileWatcherConfig["ignored_folder"]
+	ignoredFolder, ok := config.FileWatcherConfig["ignored_folder"]
 	if ok {
 		setFileWatcherIgnoredFolder(ignoredFolder)
 	}
@@ -68,6 +50,7 @@ func loadProjectConfig() {
 
 type mockApiInfo struct {
 	ApiInfo []mockApi `json:"api"`
+	Close   bool      `json:"close"`
 }
 
 type mockApi struct {
@@ -89,7 +72,9 @@ func loadApiInfo(filePathList []string) {
 
 				e := utils.LoadFileJson(jsonPath, &info)
 				if e == nil {
-					apiInfoList = append(apiInfoList, info.ApiInfo...)
+					if !info.Close {
+						apiInfoList = append(apiInfoList, info.ApiInfo...)
+					}
 				} else {
 					logger.ErrorLogger("json format error %v\n", e)
 				}
@@ -101,8 +86,8 @@ func loadApiInfo(filePathList []string) {
 	//concat api info
 	concatMap := make(map[string]mockApi)
 	for _, info := range apiInfoList {
-		if v,ok := concatMap[info.Path+info.Method];ok && !info.IsRestful{
-			for nk, nv:= range info.Data{
+		if v, ok := concatMap[info.Path+info.Method]; ok && !info.IsRestful {
+			for nk, nv := range info.Data {
 				v.Data[nk] = nv
 			}
 		} else {
@@ -115,7 +100,6 @@ func loadApiInfo(filePathList []string) {
 	for _, v := range concatMap {
 		result = append(result, v.toApiInfo())
 	}
-
 
 	if len(result) == 0 {
 		panic(fmt.Errorf(" mock api is empty!"))
