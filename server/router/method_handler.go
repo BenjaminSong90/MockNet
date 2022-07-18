@@ -3,6 +3,7 @@ package router
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
 	"io/ioutil"
@@ -161,8 +162,10 @@ func collectBodyInfo(context *gin.Context, keys []string,  result map[string]str
 	if err != nil {
 		return
 	}
-	jsonBody := make(map[string]interface{})
-	err = json.Unmarshal(jsonData, &jsonBody)
+	jsonBody := map[string]interface{}{}
+	decoder := json.NewDecoder(bytes.NewReader(jsonData))
+	decoder.UseNumber()
+	err = decoder.Decode( &jsonBody)
 	if err != nil {
 		return
 	}
@@ -170,11 +173,30 @@ func collectBodyInfo(context *gin.Context, keys []string,  result map[string]str
 	utils.FlatMap(jsonBody, kv)
 	for _, k := range keys{
 		v,ok := kv[k]
-		if sv,s := v.(string); s && ok{
+		if !ok {
+			continue
+		}
+		if sv := interface2String(v); len(sv) != 0{
 			result[k] = sv
 		}
 	}
 
 	context.Request.Body = ioutil.NopCloser(bytes.NewBuffer(jsonData))
+}
+
+func interface2String(inter interface{}) ( s string){
+
+	s = ""
+	switch inter.(type) {
+		case string:
+			s = fmt.Sprintf("%s", inter.(string))
+		case int:
+			s = fmt.Sprintf("%d", inter.(int))
+		case float64:
+			s = fmt.Sprintf("%f", inter.(float64))
+		case json.Number:
+			s = fmt.Sprintf("%v", inter.(json.Number))
+	}
+	return s
 }
 
