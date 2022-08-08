@@ -8,15 +8,33 @@ import (
 var ErrorLogger logFunc
 var DebugLogger logFunc
 
+var vLogger logFunc
+var dLogger logFunc
+var iLogger logFunc
+var wLogger logFunc
+var eLogger logFunc
+
 func init() {
 	ErrorLogger = newLogFunc("error")
 	DebugLogger = newLogFunc("debug")
+
+	vLogger = newLogFunc("V")
+	dLogger = newLogFunc("D")
+	iLogger = newLogFunc("I")
+	wLogger = newLogFunc("W")
+	eLogger = newLogFunc("E")
 
 }
 
 var logColor = map[string]string{
 	"log_color_error": "bright_red",
 	"log_color_debug": "cyan",
+
+	"log_color_V": "cyan",
+	"log_color_D": "magenta",
+	"log_color_I": "green",
+	"log_color_W": "yellow",
+	"log_color_E": "red",
 }
 
 var colors = map[string]string{
@@ -73,6 +91,5 @@ func getLogColor(logName string) string {
 func FormatPanicString(err error, info string) string {
 	color := fmt.Sprintf("\033[0;%sm", "40;31")
 	clear := fmt.Sprintf("\033[%sm", colors["reset"])
-	return fmt.Sprintf("%s %v %s %s \n",color, err, info, clear)
+	return fmt.Sprintf("%s %v %s %s \n", color, err, info, clear)
 }
-

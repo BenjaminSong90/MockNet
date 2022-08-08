@@ -24,7 +24,7 @@ func main() {
 
 	manager.AddRunningJob(func(ctx context.Context) error {
 		localApiInfoPth := setting.GetLocalApiInfoPath()
-		if setting.IsFileWatcherOpen() && len(localApiInfoPth) != 0{
+		if setting.IsFileWatcherOpen() && len(localApiInfoPth) != 0 {
 			fwatcher.InitLimit()
 			fw.Watch(localApiInfoPth)
 		}
@@ -36,8 +36,6 @@ func main() {
 		return nil
 	})
 
-
 	<-manager.Done()
-
 
 }
