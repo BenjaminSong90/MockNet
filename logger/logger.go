@@ -60,18 +60,17 @@ var colors = map[string]string{
 	"bright_white":   "\033[37;2m",
 }
 
-type logFunc func(string, ...interface{})
+type logFunc func(string)
 
-func newLogFunc(prefix string) func(string, ...interface{}) {
+func newLogFunc(prefix string) func(string) {
 	color, clear := "", ""
 	color = getLogColor(prefix)
 	clear = colors["reset"]
 	prefix = fmt.Sprintf("%-11s", prefix)
 
-	return func(format string, v ...interface{}) {
+	return func(msg string) {
 		timeString := time.Now().Format("2006/01/02 - 15:04:05")
-		format = fmt.Sprintf("%s%s |%s |%s %s\n", color, timeString, prefix, format, clear)
-		fmt.Printf(format, v...)
+		fmt.Printf("%s%s |%s |%s %s\n", color, timeString, prefix, msg, clear)
 	}
 }
 

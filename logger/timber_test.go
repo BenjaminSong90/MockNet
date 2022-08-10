@@ -8,23 +8,23 @@ type TestTree struct {
 	writeInfo string
 }
 
-func (t *TestTree) V(message string, args ...interface{}) {
+func (t *TestTree) V(message string) {
 	t.writeInfo = message
 }
 
-func (t *TestTree) D(message string, args ...interface{}) {
+func (t *TestTree) D(message string) {
 	t.writeInfo = message
 }
 
-func (t *TestTree) I(message string, args ...interface{}) {
+func (t *TestTree) I(message string) {
 	t.writeInfo = message
 }
 
-func (t *TestTree) W(message string, args ...interface{}) {
+func (t *TestTree) W(message string) {
 	t.writeInfo = message
 }
 
-func (t *TestTree) E(message string, args ...interface{}) {
+func (t *TestTree) E(message string) {
 	t.writeInfo = message
 }
 

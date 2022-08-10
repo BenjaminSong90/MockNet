@@ -1,17 +1,20 @@
 package logger
 
-import "sync"
+import (
+	"fmt"
+	"sync"
+)
 
 type Tree interface {
-	V(format string, args ...interface{})
+	V(format string)
 
-	D(format string, args ...interface{})
+	D(format string)
 
-	I(format string, args ...interface{})
+	I(format string)
 
-	W(format string, args ...interface{})
+	W(format string)
 
-	E(format string, args ...interface{})
+	E(format string)
 }
 
 type timber struct {
@@ -54,33 +57,33 @@ func Size() int {
 	return len(tree_of_souls.forest)
 }
 
-func (t *timber) V(format string, args ...interface{}) {
+func (t *timber) V(format string) {
 	for _, tree := range t.forest {
-		tree.V(format, args...)
+		tree.V(format)
 	}
 }
 
-func (t *timber) D(format string, args ...interface{}) {
+func (t *timber) D(format string) {
 	for _, tree := range t.forest {
-		tree.D(format, args...)
+		tree.D(format)
 	}
 }
 
-func (t *timber) I(format string, args ...interface{}) {
+func (t *timber) I(format string) {
 	for _, tree := range t.forest {
-		tree.I(format, args...)
+		tree.I(format)
 	}
 }
 
-func (t *timber) W(format string, args ...interface{}) {
+func (t *timber) W(format string) {
 	for _, tree := range t.forest {
-		tree.W(format, args...)
+		tree.W(format)
 	}
 }
 
-func (t *timber) E(format string, args ...interface{}) {
+func (t *timber) E(format string) {
 	for _, tree := range t.forest {
-		tree.E(format, args...)
+		tree.E(format)
 	}
 }
 
@@ -88,42 +91,42 @@ type DebugTree struct{}
 
 var _ Tree = &DebugTree{}
 
-func (t *DebugTree) V(format string, args ...interface{}) {
-	vLogger(format, args)
+func (t *DebugTree) V(format string) {
+	vLogger(format)
 }
 
-func (t *DebugTree) D(format string, args ...interface{}) {
-	dLogger(format, args)
+func (t *DebugTree) D(format string) {
+	dLogger(format)
 }
 
-func (t *DebugTree) I(format string, args ...interface{}) {
-	iLogger(format, args)
+func (t *DebugTree) I(format string) {
+	iLogger(format)
 }
 
-func (t *DebugTree) W(format string, args ...interface{}) {
-	wLogger(format, args)
+func (t *DebugTree) W(format string) {
+	wLogger(format)
 }
 
-func (t *DebugTree) E(format string, args ...interface{}) {
-	eLogger(format, args)
+func (t *DebugTree) E(format string) {
+	eLogger(format)
 }
 
 func V(format string, args ...interface{}) {
-	tree_of_souls.V(format, args...)
+	tree_of_souls.V(fmt.Sprintf(format, args...))
 }
 
 func D(format string, args ...interface{}) {
-	tree_of_souls.D(format, args...)
+	tree_of_souls.D(fmt.Sprintf(format, args...))
 }
 
 func I(format string, args ...interface{}) {
-	tree_of_souls.I(format, args...)
+	tree_of_souls.I(fmt.Sprintf(format, args...))
 }
 
 func W(format string, args ...interface{}) {
-	tree_of_souls.W(format, args...)
+	tree_of_souls.W(fmt.Sprintf(format, args...))
 }
 
 func E(format string, args ...interface{}) {
-	tree_of_souls.E(format, args...)
+	tree_of_souls.E(fmt.Sprintf(format, args...))
 }
