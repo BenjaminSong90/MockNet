@@ -10,34 +10,34 @@ import (
 )
 
 var (
-	stopChannel  chan bool
+	stopChannel chan bool
 )
 
 func init() {
 	stopChannel = make(chan bool)
 }
 
-func StartServer(ctx context.Context)  {
-	for{
-		var container  = Container{}
+func StartServer(ctx context.Context) {
+	for {
+		var container = Container{}
 		container.Start(New())
 		select {
-		case reStart :=<- stopChannel:
+		case reStart := <-stopChannel:
 			container.CloseWithWait()
 			if !reStart {
 				return
 			}
-		case eventName :=<- fwatcher.FileChangeChannel:
+		case eventName := <-fwatcher.FileChangeChannel:
 
 			time.Sleep(1000 * time.Millisecond)
 
 			flushEvents()
 
-			if shouldReload(eventName){
+			if shouldReload(eventName) {
 				container.CloseWithWait()
 			}
 
-		case <- ctx.Done():
+		case <-ctx.Done():
 			container.CloseWithWait()
 			return
 		}
@@ -45,12 +45,11 @@ func StartServer(ctx context.Context)  {
 	}
 }
 
-
 func flushEvents() {
 	for {
 		select {
-		case eventName := <- fwatcher.FileChangeChannel:
-			logger.DebugLogger("receiving event %s", eventName)
+		case eventName := <-fwatcher.FileChangeChannel:
+			logger.D("receiving event %s", eventName)
 		default:
 			return
 		}

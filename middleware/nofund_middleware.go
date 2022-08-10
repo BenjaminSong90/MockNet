@@ -1,10 +1,11 @@
 package middleware
 
 import (
-	"github.com/gin-gonic/gin"
 	"mocknet/logger"
 	"mocknet/server/router"
 	"net/http"
+
+	"github.com/gin-gonic/gin"
 )
 
 func NoFundHandle() gin.HandlerFunc {
@@ -12,7 +13,7 @@ func NoFundHandle() gin.HandlerFunc {
 		context.Next()
 		if context.Writer.Status() == http.StatusNotFound ||
 			context.Writer.Status() == http.StatusMethodNotAllowed {
-			logger.DebugLogger(">>>>>>%s<<<<<< is proxy", context.Request.URL.Path)
+			logger.D(">>>>>>%s<<<<<< is proxy", context.Request.URL.Path)
 			router.ReverseProxy(context, func(req *http.Request) {})
 		}
 	}

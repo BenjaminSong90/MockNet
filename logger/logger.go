@@ -5,9 +5,6 @@ import (
 	"time"
 )
 
-var ErrorLogger logFunc
-var DebugLogger logFunc
-
 var vLogger logFunc
 var dLogger logFunc
 var iLogger logFunc
@@ -15,8 +12,6 @@ var wLogger logFunc
 var eLogger logFunc
 
 func init() {
-	ErrorLogger = newLogFunc("error")
-	DebugLogger = newLogFunc("debug")
 
 	vLogger = newLogFunc("V")
 	dLogger = newLogFunc("D")
@@ -38,45 +33,44 @@ var logColor = map[string]string{
 }
 
 var colors = map[string]string{
-	"reset":          "0",
-	"black":          "30",
-	"red":            "31",
-	"green":          "32",
-	"yellow":         "33",
-	"blue":           "34",
-	"magenta":        "35",
-	"cyan":           "36",
-	"white":          "37",
-	"bold_black":     "30;1",
-	"bold_red":       "31;1",
-	"bold_green":     "32;1",
-	"bold_yellow":    "33;1",
-	"bold_blue":      "34;1",
-	"bold_magenta":   "35;1",
-	"bold_cyan":      "36;1",
-	"bold_white":     "37;1",
-	"bright_black":   "30;2",
-	"bright_red":     "31;2",
-	"bright_green":   "32;2",
-	"bright_yellow":  "33;2",
-	"bright_blue":    "34;2",
-	"bright_magenta": "35;2",
-	"bright_cyan":    "36;2",
-	"bright_white":   "37;2",
+	"reset":          "\033[0m",
+	"black":          "\033[30m",
+	"red":            "\033[31m",
+	"green":          "\033[32m",
+	"yellow":         "\033[33m",
+	"blue":           "\033[34m",
+	"magenta":        "\033[35m",
+	"cyan":           "\033[36m",
+	"white":          "\033[37m",
+	"bold_black":     "\033[30;1m",
+	"bold_red":       "\033[31;1m",
+	"bold_green":     "\033[32;1m",
+	"bold_yellow":    "\033[33;1m",
+	"bold_blue":      "\033[34;1m",
+	"bold_magenta":   "\033[35;1m",
+	"bold_cyan":      "\033[36;1m",
+	"bold_white":     "\033[37;1m",
+	"bright_black":   "\033[30;2m",
+	"bright_red":     "\033[31;2m",
+	"bright_green":   "\033[32;2m",
+	"bright_yellow":  "\033[33;2m",
+	"bright_blue":    "\033[34;2m",
+	"bright_magenta": "\033[35;2m",
+	"bright_cyan":    "\033[36;2m",
+	"bright_white":   "\033[37;2m",
 }
 
 type logFunc func(string, ...interface{})
 
 func newLogFunc(prefix string) func(string, ...interface{}) {
 	color, clear := "", ""
-	color = fmt.Sprintf("\033[%sm", getLogColor(prefix))
-	clear = fmt.Sprintf("\033[%sm", colors["reset"])
+	color = getLogColor(prefix)
+	clear = colors["reset"]
 	prefix = fmt.Sprintf("%-11s", prefix)
 
 	return func(format string, v ...interface{}) {
-		now := time.Now()
-		timeString := fmt.Sprintf("%d:%d:%02d", now.Hour(), now.Minute(), now.Second())
-		format = fmt.Sprintf("%s%s %s |%s %s\n", color, timeString, prefix, format, clear)
+		timeString := time.Now().Format("2006/01/02 - 15:04:05")
+		format = fmt.Sprintf("%s%s |%s |%s %s\n", color, timeString, prefix, format, clear)
 		fmt.Printf(format, v...)
 	}
 }
@@ -90,6 +84,6 @@ func getLogColor(logName string) string {
 
 func FormatPanicString(err error, info string) string {
 	color := fmt.Sprintf("\033[0;%sm", "40;31")
-	clear := fmt.Sprintf("\033[%sm", colors["reset"])
+	clear := colors["reset"]
 	return fmt.Sprintf("%s %v %s %s \n", color, err, info, clear)
 }

@@ -3,15 +3,15 @@ package logger
 import "sync"
 
 type Tree interface {
-	V(err error, message string, args ...interface{})
+	V(format string, args ...interface{})
 
-	D(err error, message string, args ...interface{})
+	D(format string, args ...interface{})
 
-	I(err error, message string, args ...interface{})
+	I(format string, args ...interface{})
 
-	W(err error, message string, args ...interface{})
+	W(format string, args ...interface{})
 
-	E(err error, message string, args ...interface{})
+	E(format string, args ...interface{})
 }
 
 type timber struct {
@@ -54,33 +54,33 @@ func Size() int {
 	return len(tree_of_souls.forest)
 }
 
-func (t *timber) V(err error, message string, args ...interface{}) {
+func (t *timber) V(format string, args ...interface{}) {
 	for _, tree := range t.forest {
-		tree.V(err, message, args...)
+		tree.V(format, args...)
 	}
 }
 
-func (t *timber) D(err error, message string, args ...interface{}) {
+func (t *timber) D(format string, args ...interface{}) {
 	for _, tree := range t.forest {
-		tree.D(err, message, args...)
+		tree.D(format, args...)
 	}
 }
 
-func (t *timber) I(err error, message string, args ...interface{}) {
+func (t *timber) I(format string, args ...interface{}) {
 	for _, tree := range t.forest {
-		tree.I(err, message, args...)
+		tree.I(format, args...)
 	}
 }
 
-func (t *timber) W(err error, message string, args ...interface{}) {
+func (t *timber) W(format string, args ...interface{}) {
 	for _, tree := range t.forest {
-		tree.W(err, message, args...)
+		tree.W(format, args...)
 	}
 }
 
-func (t *timber) E(err error, message string, args ...interface{}) {
+func (t *timber) E(format string, args ...interface{}) {
 	for _, tree := range t.forest {
-		tree.E(err, message, args...)
+		tree.E(format, args...)
 	}
 }
 
@@ -88,42 +88,42 @@ type DebugTree struct{}
 
 var _ Tree = &DebugTree{}
 
-func (t *DebugTree) V(err error, message string, args ...interface{}) {
-	vLogger(message, args)
+func (t *DebugTree) V(format string, args ...interface{}) {
+	vLogger(format, args)
 }
 
-func (t *DebugTree) D(err error, message string, args ...interface{}) {
-	dLogger(message, args)
+func (t *DebugTree) D(format string, args ...interface{}) {
+	dLogger(format, args)
 }
 
-func (t *DebugTree) I(err error, message string, args ...interface{}) {
-	iLogger(message, args)
+func (t *DebugTree) I(format string, args ...interface{}) {
+	iLogger(format, args)
 }
 
-func (t *DebugTree) W(err error, message string, args ...interface{}) {
-	wLogger(message, args)
+func (t *DebugTree) W(format string, args ...interface{}) {
+	wLogger(format, args)
 }
 
-func (t *DebugTree) E(err error, message string, args ...interface{}) {
-	eLogger(message, args)
+func (t *DebugTree) E(format string, args ...interface{}) {
+	eLogger(format, args)
 }
 
-func V(err error, message string, args ...interface{}) {
-	tree_of_souls.V(err, message, args...)
+func V(format string, args ...interface{}) {
+	tree_of_souls.V(format, args...)
 }
 
-func D(err error, message string, args ...interface{}) {
-	tree_of_souls.D(err, message, args...)
+func D(format string, args ...interface{}) {
+	tree_of_souls.D(format, args...)
 }
 
-func I(err error, message string, args ...interface{}) {
-	tree_of_souls.I(err, message, args...)
+func I(format string, args ...interface{}) {
+	tree_of_souls.I(format, args...)
 }
 
-func W(err error, message string, args ...interface{}) {
-	tree_of_souls.W(err, message, args...)
+func W(format string, args ...interface{}) {
+	tree_of_souls.W(format, args...)
 }
 
-func E(err error, message string, args ...interface{}) {
-	tree_of_souls.E(err, message, args...)
+func E(format string, args ...interface{}) {
+	tree_of_souls.E(format, args...)
 }

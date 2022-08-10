@@ -2,13 +2,14 @@ package fwatcher
 
 import (
 	"context"
-	"github.com/howeyc/fsnotify"
 	"mocknet/logger"
 	"mocknet/setting"
 	"os"
 	"path/filepath"
 	"strings"
 	"sync"
+
+	"github.com/howeyc/fsnotify"
 )
 
 var (
@@ -39,18 +40,18 @@ func (fw *FileWatcher) watchFolder(path string) (*fsnotify.Watcher, error) {
 	go func(c context.Context) {
 		for {
 			select {
-			case ev,ok := <-watcher.Event:
+			case ev, ok := <-watcher.Event:
 				if ok {
-					logger.DebugLogger("sending event %s", ev.String())
+					logger.D("sending event %s", ev.String())
 					if fw.isWatchedFile(ev.Name) {
 						FileChangeChannel <- ev.String()
 					}
 				} else {
-					logger.DebugLogger("sending empty event")
+					logger.D("sending empty event")
 				}
-			case err,ok := <-watcher.Error:
+			case err, ok := <-watcher.Error:
 				if ok {
-					logger.DebugLogger("watcher error: %s", err)
+					logger.D("watcher error: %s", err)
 				}
 			case <-c.Done():
 				goto OutLoop
@@ -59,7 +60,7 @@ func (fw *FileWatcher) watchFolder(path string) (*fsnotify.Watcher, error) {
 	OutLoop:
 	}(fw.ctx)
 
-	logger.DebugLogger("Watching %s", path)
+	logger.D("Watching %s", path)
 	err = watcher.Watch(path)
 
 	if err == nil {
@@ -81,13 +82,13 @@ func (fw *FileWatcher) Watch(paths []string) []error {
 				}
 
 				if fw.isIgnoredFolder(path) {
-					logger.DebugLogger("Ignoring %s", path)
+					logger.D("Ignoring %s", path)
 					return filepath.SkipDir
 				}
 
 				w, err := fw.watchFolder(path)
 				if err != nil {
-					logger.ErrorLogger("%s error: %s", path, err)
+					logger.E("%s error: %s", path, err)
 					errs = append(errs, err)
 				} else {
 					fw.lock.Lock()
@@ -103,7 +104,7 @@ func (fw *FileWatcher) Watch(paths []string) []error {
 }
 
 func (fw *FileWatcher) Close() []error {
-	logger.DebugLogger("Start close file watcher")
+	logger.D("Start close file watcher")
 	fileWatcher.ctxCancel()
 	var errs []error
 	for _, w := range fw.watchers {
@@ -112,7 +113,7 @@ func (fw *FileWatcher) Close() []error {
 			errs = append(errs, err)
 		}
 	}
-	logger.DebugLogger("End close file watcher")
+	logger.D("End close file watcher")
 	close(FileChangeChannel)
 	return errs
 }
@@ -123,7 +124,7 @@ func InitFileWatcher() *FileWatcher {
 			lock:     &sync.RWMutex{},
 			watchers: make([]*fsnotify.Watcher, 0),
 		}
-		ctx,cancel := context.WithCancel(context.Background())
+		ctx, cancel := context.WithCancel(context.Background())
 		fileWatcher.ctx = ctx
 		fileWatcher.ctxCancel = cancel
 	})

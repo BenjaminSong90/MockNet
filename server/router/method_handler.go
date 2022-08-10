@@ -4,71 +4,70 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"github.com/gin-gonic/gin"
-	"github.com/gin-gonic/gin/binding"
 	"io/ioutil"
 	"mocknet/logger"
 	"mocknet/setting"
 	"mocknet/utils"
 	"net/http"
 	"strings"
+
+	"github.com/gin-gonic/gin"
+	"github.com/gin-gonic/gin/binding"
 )
 
 /**
-	如果 api 是restful请求：
-	字典的key RequestURI+key_name按照顺序进行拼接： /user/1?t=1,key1V,key2V,key3V
-	key1V是用key1从header和body找查找的，如果没有会直接跳过例如 上面key2没有查找到的，生成的key是：/user/1?t=1,key1V,key3V
-	key的查找顺序是header 和 body,如果header和body中都存在，body中的value会覆盖header中的value
+如果 api 是restful请求：
+字典的key RequestURI+key_name按照顺序进行拼接： /user/1?t=1,key1V,key2V,key3V
+key1V是用key1从header和body找查找的，如果没有会直接跳过例如 上面key2没有查找到的，生成的key是：/user/1?t=1,key1V,key3V
+key的查找顺序是header 和 body,如果header和body中都存在，body中的value会覆盖header中的value
 
-	如果 api 不是 restful 请求：
-	字典的key key_name按照顺序进行拼接： key1V,key2V,key3V
-	key1V是用key1从header和body找查找的，如果没有会直接跳过例如 上面key2没有查找到的，生成的key是：key1V,key3V
-	key的查找顺序是header 和 body,如果header和body中都存在，body中的value会覆盖header中的value
-	当没有找到后也会使用restful进行查找
- */
+如果 api 不是 restful 请求：
+字典的key key_name按照顺序进行拼接： key1V,key2V,key3V
+key1V是用key1从header和body找查找的，如果没有会直接跳过例如 上面key2没有查找到的，生成的key是：key1V,key3V
+key的查找顺序是header 和 body,如果header和body中都存在，body中的value会覆盖header中的value
+当没有找到后也会使用restful进行查找
+*/
 
 type MethodHandlerFunc func(detail setting.ApiInfo) gin.HandlerFunc
 
-func GetHandler(detail *setting.ApiInfo) gin.HandlerFunc{
+func GetHandler(detail *setting.ApiInfo) gin.HandlerFunc {
 	return func(context *gin.Context) {
-		logger.DebugLogger("request full path"+context.Request.RequestURI)
+		logger.D("request full path" + context.Request.RequestURI)
 		handleRequest(context, detail)
 		//context.JSON(http.StatusOK, detail.Data[context.Request.URL.Path])
 	}
 }
 
-func DeleteHandler(detail *setting.ApiInfo) gin.HandlerFunc{
+func DeleteHandler(detail *setting.ApiInfo) gin.HandlerFunc {
 	return func(context *gin.Context) {
 		handleRequest(context, detail)
 		//context.JSON(http.StatusOK, detail.Data[context.Request.RequestURI])
 	}
 }
 
-func PostHandler(detail *setting.ApiInfo) gin.HandlerFunc{
+func PostHandler(detail *setting.ApiInfo) gin.HandlerFunc {
 	return func(context *gin.Context) {
 		handleBodyRequest(context, detail)
 	}
 }
 
-func PutHandler(detail *setting.ApiInfo) gin.HandlerFunc{
+func PutHandler(detail *setting.ApiInfo) gin.HandlerFunc {
 	return func(context *gin.Context) {
 		handleBodyRequest(context, detail)
 	}
 }
 
-
-
-//处理有body的quest
+// 处理有body的quest
 func handleBodyRequest(context *gin.Context, detail *setting.ApiInfo) {
 
 	if detail.Restful {
-		handleRequest(context , detail)
+		handleRequest(context, detail)
 		//context.JSON(http.StatusOK, detail.Data[context.Request.RequestURI])
 	} else {
 		switch context.ContentType() {
 		case binding.MIMEJSON:
 			//handleJsonType(context, detail)
-			handleRequest(context , detail)
+			handleRequest(context, detail)
 		case binding.MIMEXML, binding.MIMEXML2:
 			fallthrough
 		case binding.MIMEPROTOBUF:
@@ -85,19 +84,19 @@ func handleBodyRequest(context *gin.Context, detail *setting.ApiInfo) {
 	}
 }
 
-func handleRequest(context *gin.Context, detail *setting.ApiInfo){
+func handleRequest(context *gin.Context, detail *setting.ApiInfo) {
 	if detail.Restful {
 
 		ks := collectKey(context, detail)
 		v := ""
-		if len(ks) == 0{
+		if len(ks) == 0 {
 			v = context.Request.RequestURI
 		} else {
-			v = context.Request.RequestURI + "," +strings.Join(ks, ",")
+			v = context.Request.RequestURI + "," + strings.Join(ks, ",")
 		}
-		logger.DebugLogger(">>>>>v: "+v)
+		logger.D(">>>>>v: " + v)
 
-		if v,ok := detail.Data[v]; ok{
+		if v, ok := detail.Data[v]; ok {
 			context.JSON(http.StatusOK, v)
 			return
 		}
@@ -111,16 +110,16 @@ func handleRequest(context *gin.Context, detail *setting.ApiInfo){
 			v = strings.Join(ks, ",")
 		}
 
-		if v,ok := detail.Data[v]; ok{
+		if v, ok := detail.Data[v]; ok {
 			context.JSON(http.StatusOK, v)
 			return
 		}
-		if len(v) == 0{
+		if len(v) == 0 {
 			v = context.Request.RequestURI
 		} else {
 			v = context.Request.RequestURI + "," + v
 		}
-		if v,ok := detail.Data[v]; ok{
+		if v, ok := detail.Data[v]; ok {
 			context.JSON(http.StatusOK, v)
 			return
 		}
@@ -129,16 +128,16 @@ func handleRequest(context *gin.Context, detail *setting.ApiInfo){
 	}
 }
 
-func collectKey(context *gin.Context, detail *setting.ApiInfo)[]string{
-	result := make([]string ,0)
-	if len(detail.KeyName) == 0{
+func collectKey(context *gin.Context, detail *setting.ApiInfo) []string {
+	result := make([]string, 0)
+	if len(detail.KeyName) == 0 {
 		return result
 	}
 	keys := strings.Split(detail.KeyName, ",")
 	collector := make(map[string]string)
 	collectHeaderInfo(context, keys, collector)
 	collectBodyInfo(context, keys, collector)
-	for _,k := range keys{
+	for _, k := range keys {
 		v, ok := collector[k]
 		if ok {
 			result = append(result, v)
@@ -147,16 +146,16 @@ func collectKey(context *gin.Context, detail *setting.ApiInfo)[]string{
 	return result
 }
 
-func collectHeaderInfo(context *gin.Context, keys []string, result map[string]string){
-	for _,k := range keys{
+func collectHeaderInfo(context *gin.Context, keys []string, result map[string]string) {
+	for _, k := range keys {
 		v := context.GetHeader(k)
-		if len(v) != 0{
+		if len(v) != 0 {
 			result[k] = v
 		}
 	}
 }
 
-func collectBodyInfo(context *gin.Context, keys []string,  result map[string]string){
+func collectBodyInfo(context *gin.Context, keys []string, result map[string]string) {
 
 	jsonData, err := ioutil.ReadAll(context.Request.Body)
 	if err != nil {
@@ -165,18 +164,18 @@ func collectBodyInfo(context *gin.Context, keys []string,  result map[string]str
 	jsonBody := map[string]interface{}{}
 	decoder := json.NewDecoder(bytes.NewReader(jsonData))
 	decoder.UseNumber()
-	err = decoder.Decode( &jsonBody)
+	err = decoder.Decode(&jsonBody)
 	if err != nil {
 		return
 	}
 	kv := make(map[string]interface{})
 	utils.FlatMap(jsonBody, kv)
-	for _, k := range keys{
-		v,ok := kv[k]
+	for _, k := range keys {
+		v, ok := kv[k]
 		if !ok {
 			continue
 		}
-		if sv := interface2String(v); len(sv) != 0{
+		if sv := interface2String(v); len(sv) != 0 {
 			result[k] = sv
 		}
 	}
@@ -184,19 +183,18 @@ func collectBodyInfo(context *gin.Context, keys []string,  result map[string]str
 	context.Request.Body = ioutil.NopCloser(bytes.NewBuffer(jsonData))
 }
 
-func interface2String(inter interface{}) ( s string){
+func interface2String(inter interface{}) (s string) {
 
 	s = ""
 	switch inter.(type) {
-		case string:
-			s = fmt.Sprintf("%s", inter.(string))
-		case int:
-			s = fmt.Sprintf("%d", inter.(int))
-		case float64:
-			s = fmt.Sprintf("%f", inter.(float64))
-		case json.Number:
-			s = fmt.Sprintf("%v", inter.(json.Number))
+	case string:
+		s = fmt.Sprintf("%s", inter.(string))
+	case int:
+		s = fmt.Sprintf("%d", inter.(int))
+	case float64:
+		s = fmt.Sprintf("%f", inter.(float64))
+	case json.Number:
+		s = fmt.Sprintf("%v", inter.(json.Number))
 	}
 	return s
 }
-

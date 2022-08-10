@@ -61,7 +61,7 @@ type mockApi struct {
 	KeyName   string                            `json:"key_name"`   //在非restful 的情况下用于判断mock数据
 }
 
-//file路径集合 加载json文件 信息
+// file路径集合 加载json文件 信息
 func loadApiInfo(filePathList []string) {
 
 	var apiInfoList []mockApi
@@ -76,7 +76,7 @@ func loadApiInfo(filePathList []string) {
 						apiInfoList = append(apiInfoList, info.ApiInfo...)
 					}
 				} else {
-					logger.ErrorLogger("json format error %v\n", e)
+					logger.E("json format error %v\n", e)
 				}
 			}
 			return nil

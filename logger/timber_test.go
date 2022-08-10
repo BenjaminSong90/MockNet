@@ -8,23 +8,23 @@ type TestTree struct {
 	writeInfo string
 }
 
-func (t *TestTree) V(err error, message string, args ...interface{}) {
+func (t *TestTree) V(message string, args ...interface{}) {
 	t.writeInfo = message
 }
 
-func (t *TestTree) D(err error, message string, args ...interface{}) {
+func (t *TestTree) D(message string, args ...interface{}) {
 	t.writeInfo = message
 }
 
-func (t *TestTree) I(err error, message string, args ...interface{}) {
+func (t *TestTree) I(message string, args ...interface{}) {
 	t.writeInfo = message
 }
 
-func (t *TestTree) W(err error, message string, args ...interface{}) {
+func (t *TestTree) W(message string, args ...interface{}) {
 	t.writeInfo = message
 }
 
-func (t *TestTree) E(err error, message string, args ...interface{}) {
+func (t *TestTree) E(message string, args ...interface{}) {
 	t.writeInfo = message
 }
 
@@ -32,7 +32,7 @@ func TestTimber(t *testing.T) {
 	testTree := &TestTree{}
 	PlantTree(testTree)
 
-	I(nil, "test")
+	I("test")
 
 	if testTree.writeInfo != "test" {
 		t.Error()
