@@ -118,7 +118,7 @@ func (fw *FileWatcher) Close() []error {
 	return errs
 }
 
-func InitFileWatcher() *FileWatcher {
+func GetFileWatcher() *FileWatcher {
 	startOnce.Do(func() {
 		fileWatcher = &FileWatcher{
 			lock:     &sync.RWMutex{},
@@ -128,14 +128,6 @@ func InitFileWatcher() *FileWatcher {
 		fileWatcher.ctx = ctx
 		fileWatcher.ctxCancel = cancel
 	})
-
-	return fileWatcher
-}
-
-func GetFileWatcher() *FileWatcher {
-	if fileWatcher == nil {
-		panic("File watcher is not init")
-	}
 
 	return fileWatcher
 }

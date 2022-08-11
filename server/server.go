@@ -5,6 +5,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"golang.org/x/sync/errgroup"
 	"log"
+	"mocknet/logger"
 	"mocknet/middleware"
 	"mocknet/server/router"
 	"mocknet/setting"
@@ -24,12 +25,10 @@ func New() *Server {
 
 var _ ContainerRunnable = &Server{}
 
-
-func (server *Server) Run(ctx context.Context) error  {
+func (server *Server) Run(ctx context.Context) error {
 	server.ctx, server.cancel = context.WithCancel(ctx)
 	return server.Start()
 }
-
 
 func (server *Server) Start() error {
 	setting.LoadApiInfo()
@@ -65,17 +64,16 @@ func (server *Server) listenAndServe() error {
 		return server.httpServer.Shutdown(ctx)
 	})
 	g.Go(func() error {
-		log.Println("Server  Start...")
+		logger.W("Server  Start...")
 		if err := server.httpServer.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 			log.Println("Error Shutdown Server ...")
 			return err
 		}
-		log.Println("Normal Shutdown Server ...")
+		logger.W("Normal Shutdown Server ...")
 		return nil
 	})
 	return g.Wait()
 }
-
 
 func (server *Server) Close() {
 	server.cancel()

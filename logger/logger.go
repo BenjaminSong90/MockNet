@@ -26,8 +26,8 @@ var logColor = map[string]string{
 	"log_color_debug": "cyan",
 
 	"log_color_V": "cyan",
-	"log_color_D": "magenta",
-	"log_color_I": "green",
+	"log_color_D": "green",
+	"log_color_I": "magenta",
 	"log_color_W": "yellow",
 	"log_color_E": "red",
 }
