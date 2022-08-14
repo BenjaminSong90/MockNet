@@ -1,4 +1,4 @@
-package router
+package handler
 
 import (
 	"bytes"
@@ -17,10 +17,10 @@ type KV[K string | int, V string | int] struct {
 }
 
 // KVA KV array
-type KVA[T string | int] []KV[T, T]
+type KVA[K string | int, V string | int] []KV[K, V]
 
 // K 返回 KVA 的 所有的Key
-func (kva KVA[T]) K() (ks []T) {
+func (kva KVA[K, V]) K() (ks []K) {
 	for _, entry := range kva {
 		ks = append(ks, entry.Key)
 	}
@@ -28,7 +28,7 @@ func (kva KVA[T]) K() (ks []T) {
 }
 
 // V 返回 KVA 的 所有的Value
-func (kva KVA[T]) V() (vs []T) {
+func (kva KVA[K, V]) V() (vs []V) {
 	for _, entry := range kva {
 		vs = append(vs, entry.Value)
 	}
@@ -36,19 +36,19 @@ func (kva KVA[T]) V() (vs []T) {
 }
 
 // KJoin 拼接 KVA 的 所有 Key
-func (kva KVA[T]) KJoin(sep string) string {
+func (kva KVA[K, V]) KJoin(sep string) string {
 	return strings.Trim(strings.Replace(fmt.Sprint(kva.K()), " ", sep, -1), "[]")
 }
 
 // VJoin 拼接 KVA 的 所有 Value
-func (kva KVA[T]) VJoin(sep string) string {
+func (kva KVA[K, V]) VJoin(sep string) string {
 	return strings.Trim(strings.Replace(fmt.Sprint(kva.V()), " ", sep, -1), "[]")
 }
 
 // RData 请求数据
 type RData struct {
-	Params     KVA[string]
-	QueryArray KVA[string]
+	Params     KVA[string, string]
+	QueryArray KVA[string, string]
 	BodyValue  string
 }
 
