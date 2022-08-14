@@ -11,16 +11,15 @@ func InitApi(router *gin.Engine, apiInfoList *[]*setting.ApiInfo) {
 
 		switch strings.ToUpper(apiDetail.Method) {
 		case "GET":
-			router.GET(apiDetail.Path, GetHandler(apiDetail))
+			router.GET(apiDetail.Path, MethodHandler(apiDetail))
 		case "POST":
-			router.POST(apiDetail.Path, PostHandler(apiDetail))
+			router.POST(apiDetail.Path, MethodHandler(apiDetail))
 		case "DELETE":
-			router.DELETE(apiDetail.Path, DeleteHandler(apiDetail))
+			router.DELETE(apiDetail.Path, MethodHandler(apiDetail))
 		case "PUT":
-			router.PUT(apiDetail.Path, PutHandler(apiDetail))
+			router.PUT(apiDetail.Path, MethodHandler(apiDetail))
 		default:
-			router.GET(apiDetail.Path, GetHandler(apiDetail))
+			router.GET(apiDetail.Path, MethodHandler(apiDetail))
 		}
 	}
 }
-

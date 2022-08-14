@@ -16,7 +16,6 @@ func ReverseProxy(context *gin.Context, extDirector func(req *http.Request)) {
 		req.URL.Host = req.Host
 		extDirector(req)
 	}
-	context.Writer.WriteHeader(200)
 	proxy := &httputil.ReverseProxy{Director: director}
 	proxy.ServeHTTP(context.Writer, context.Request)
 }
