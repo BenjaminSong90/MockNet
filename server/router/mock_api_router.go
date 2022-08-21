@@ -2,6 +2,7 @@ package router
 
 import (
 	"github.com/gin-gonic/gin"
+	"mocknet/logger"
 	"mocknet/server/router/handler"
 	"mocknet/setting"
 	"strings"
@@ -20,7 +21,8 @@ func InitApi(router *gin.Engine, apiInfoList *[]*setting.ApiInfo) {
 		case "PUT":
 			router.PUT(apiDetail.Path, handler.MethodHandler(apiDetail))
 		default:
-			router.GET(apiDetail.Path, handler.MethodHandler(apiDetail))
+			logger.E("this method not support %s", apiDetail.Method)
+			//router.GET(apiDetail.Path, handler.MethodHandler(apiDetail))
 		}
 	}
 }

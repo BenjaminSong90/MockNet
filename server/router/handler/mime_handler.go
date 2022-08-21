@@ -47,9 +47,10 @@ func (kva KVA[K, V]) VJoin(sep string) string {
 
 // RData 请求数据
 type RData struct {
-	Params     KVA[string, string]
-	QueryArray KVA[string, string]
-	BodyValue  string
+	Uri        string              //request real uri
+	Params     KVA[string, string] //request path params
+	QueryArray KVA[string, string] //request query params
+	BodyValue  string              //body 中读取到的值
 }
 
 func (data RData) GenerateKey() string {
@@ -94,8 +95,9 @@ func (handler *MimeJsonHandler) GetMimeType() string {
 	return "json"
 }
 
-func (handler *MimeJsonHandler) CollectParam(context *gin.Context, keyName string, queryArray []string) *RData {
+func (handler *MimeJsonHandler) CollectParam(context *gin.Context, keyName string, userCardQueryArray []string) *RData {
 	data := &RData{}
+	data.Uri = context.Request.URL.RequestURI()
 	for _, entry := range context.Params {
 		data.Params = append(data.Params, KV[string, string]{
 			Key:   entry.Key,
@@ -103,10 +105,10 @@ func (handler *MimeJsonHandler) CollectParam(context *gin.Context, keyName strin
 		})
 	}
 
-	for _, entry := range queryArray {
+	for _, entry := range userCardQueryArray {
 		q := context.Query(entry)
 		if len(q) != 0 {
-			data.QueryArray = append(data.Params, KV[string, string]{
+			data.QueryArray = append(data.QueryArray, KV[string, string]{
 				Key:   entry,
 				Value: q,
 			})
