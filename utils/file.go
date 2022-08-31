@@ -2,14 +2,13 @@ package utils
 
 import (
 	"encoding/json"
-	"io/ioutil"
 	"os"
 )
 
-//load local json
+// LoadFileJson load local json
 func LoadFileJson(filePath string, v interface{}) (err error) {
 
-	jsonData, err := ioutil.ReadFile(filePath)
+	jsonData, err := os.ReadFile(filePath)
 	if err != nil {
 		return
 	}
@@ -19,8 +18,7 @@ func LoadFileJson(filePath string, v interface{}) (err error) {
 	return
 }
 
-
-// 判断所给路径文件/文件夹是否存在
+// Exists 判断所给路径文件/文件夹是否存在
 func Exists(path string) bool {
 	_, err := os.Stat(path)
 	if err != nil {
@@ -32,7 +30,7 @@ func Exists(path string) bool {
 	return true
 }
 
-// 判断所给路径是否为文件夹
+// IsDir 判断所给路径是否为文件夹
 func IsDir(path string) bool {
 	s, err := os.Stat(path)
 	if err != nil {
@@ -41,7 +39,7 @@ func IsDir(path string) bool {
 	return s.IsDir()
 }
 
-// 判断所给路径是否为文件
+// IsFile 判断所给路径是否为文件
 func IsFile(path string) bool {
 	return !IsDir(path)
 }

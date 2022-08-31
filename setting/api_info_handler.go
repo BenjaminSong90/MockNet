@@ -3,6 +3,7 @@ package setting
 import (
 	"fmt"
 	"mocknet/logger"
+	"mocknet/utils"
 	"strings"
 )
 
@@ -51,3 +52,18 @@ type ApiMockInfoData struct {
 func (data ApiMockInfoData) String() string {
 	return fmt.Sprintf("{ Plugin: %s, FolderPath:%s}", data.Plugin, data.FolderPath)
 }
+
+type ApiDataHandler struct {
+}
+
+func (collector ApiDataHandler) HandleExt() string {
+	return ".api"
+}
+
+func (collector ApiDataHandler) ParserData(fullPath string) (error, ApiData) {
+	data := ApiData{}
+	err := utils.LoadFileJson(fullPath, data)
+	return err, data
+}
+
+var _ ConfigHandler[ApiData] = ApiDataHandler{}
