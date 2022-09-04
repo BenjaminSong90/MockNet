@@ -2,10 +2,8 @@ package setting
 
 import (
 	"fmt"
-	"io/fs"
 	"mocknet/logger"
 	"mocknet/utils"
-	"path/filepath"
 )
 
 type projectConfig struct {
@@ -46,76 +44,4 @@ func loadProjectConfig() {
 		setFileWatcherIgnoredFolder(ignoredFolder)
 	}
 
-}
-
-type mockApiInfo struct {
-	ApiInfo []mockApi `json:"api"`
-	Close   bool      `json:"close"`
-}
-
-type mockApi struct {
-	Path      string                            `json:"path"`       //请求的路径
-	IsRestful bool                              `json:"is_restful"` //是否restful请求
-	Data      map[string]map[string]interface{} `json:"data"`       //mock返回的数据
-	Method    string                            `json:"method"`     //请求方法
-	KeyName   string                            `json:"key_name"`   //在非restful 的情况下用于判断mock数据
-}
-
-// file路径集合 加载json文件 信息
-func loadApiInfo(filePathList []string) {
-
-	var apiInfoList []mockApi
-	for _, p := range filePathList {
-		_ = filepath.Walk(p, func(jsonPath string, info fs.FileInfo, err error) error {
-			if err == nil && !info.IsDir() && filepath.Ext(info.Name()) == ".json" {
-				info := mockApiInfo{}
-
-				e := utils.LoadFileJson(jsonPath, &info)
-				if e == nil {
-					if !info.Close {
-						apiInfoList = append(apiInfoList, info.ApiInfo...)
-					}
-				} else {
-					logger.E("json format error %v\n", e)
-				}
-			}
-			return nil
-		})
-	}
-
-	//concat api info
-	concatMap := make(map[string]mockApi)
-	for _, info := range apiInfoList {
-		if v, ok := concatMap[info.Path+info.Method]; ok && !info.IsRestful {
-			for nk, nv := range info.Data {
-				v.Data[nk] = nv
-			}
-		} else {
-			concatMap[info.Path+info.Method] = info
-		}
-
-	}
-
-	var result []*ApiInfo
-	for _, v := range concatMap {
-		result = append(result, v.toApiInfo())
-	}
-
-	if len(result) == 0 {
-		panic(fmt.Errorf(" mock api is empty!"))
-	}
-
-	setApiInfo(&result)
-}
-
-func (mockApi mockApi) toApiInfo() *ApiInfo {
-	apiInfo := ApiInfo{}
-
-	apiInfo.Method = mockApi.Method
-	apiInfo.KeyName = mockApi.KeyName
-	apiInfo.Data = mockApi.Data
-	apiInfo.Path = mockApi.Path
-	apiInfo.Restful = mockApi.IsRestful
-
-	return &apiInfo
 }

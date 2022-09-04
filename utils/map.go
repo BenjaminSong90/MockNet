@@ -4,7 +4,7 @@ import (
 	"fmt"
 )
 
-//flat map info
+// flat map info
 func FlatMap(originMap map[string]interface{}, resultMap map[string]interface{}) {
 	for key, val := range originMap {
 		switch concreteVal := val.(type) {
@@ -23,7 +23,7 @@ func FlatMap(originMap map[string]interface{}, resultMap map[string]interface{})
 	}
 }
 
-//flat array map info
+// flat array map info
 func FlatArray(anArray []interface{}, resultMap map[string]interface{}) {
 	for i, val := range anArray {
 		switch concreteVal := val.(type) {
@@ -39,8 +39,8 @@ func FlatArray(anArray []interface{}, resultMap map[string]interface{}) {
 	}
 }
 
-func MapStringCopy(dst map[string]interface{}, src map[string]interface{}){
-	for k,v := range src{
+func MapStringCopy(dst map[string]interface{}, src map[string]interface{}) {
+	for k, v := range src {
 		dst[k] = v
 	}
 }

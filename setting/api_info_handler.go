@@ -2,21 +2,23 @@ package setting
 
 import (
 	"fmt"
+	"io/fs"
 	"mocknet/logger"
 	"mocknet/utils"
+	"path/filepath"
 	"strings"
 )
 
-type ApiData struct {
-	Path         string          `json:"path"`          //url path
-	QueryKey     []string        `json:"query_key"`     //请求的关心的query信息
-	Method       string          `json:"method"`        //request method e.g:POST/GET
-	BodyKey      string          `json:"body_key"`      //请求body中的key
-	Data         ApiMockInfoData `json:"data"`          //数据配置信息
-	NeedRedirect bool            `json:"need_redirect"` //是否需求重定向
+type MockApiInfoData struct {
+	Path         string      `json:"path"`          //url path
+	QueryKey     []string    `json:"query_key"`     //请求的关心的query信息
+	Method       string      `json:"method"`        //request method e.g:POST/GET
+	BodyKey      string      `json:"body_key"`      //请求body中的key
+	Data         MockApiData `json:"data"`          //数据配置信息
+	NeedRedirect bool        `json:"need_redirect"` //是否需求重定向
 }
 
-func (apiData *ApiData) String() string {
+func (apiData *MockApiInfoData) String() string {
 	return fmt.Sprintf("{ Path: %s, QueryKey:%s, Method: %s, BodyKey: %s, Data: %s, NeedRedirect: %t}",
 		apiData.Path,
 		strings.Join(apiData.QueryKey, ","),
@@ -27,7 +29,7 @@ func (apiData *ApiData) String() string {
 }
 
 // Merge merge path and method equal data to current data, success return true , fail return false
-func (apiData *ApiData) Merge(data ApiData) bool {
+func (apiData *MockApiInfoData) Merge(data MockApiInfoData) bool {
 	if apiData.Path != data.Path || apiData.Method != data.Method {
 		return false
 	}
@@ -44,26 +46,51 @@ func (apiData *ApiData) Merge(data ApiData) bool {
 	return true
 }
 
-type ApiMockInfoData struct {
+func (apiData *MockApiInfoData) GetMockData(key string) (interface{}, bool) {
+	k := fmt.Sprintf("%s,%s", apiData.Path, apiData.Method)
+
+	if v, ok := GlobalConfigData.MockData[k]; ok {
+		if md, ok := v[key]; ok {
+			return md, true
+		}
+	}
+	return nil, false
+}
+
+type MockApiData struct {
 	Plugin     string `json:"plugin"`
 	FolderPath string `json:"folder_path"`
 }
 
-func (data ApiMockInfoData) String() string {
+func (data MockApiData) String() string {
 	return fmt.Sprintf("{ Plugin: %s, FolderPath:%s}", data.Plugin, data.FolderPath)
 }
 
 type ApiDataHandler struct {
 }
 
-func (collector ApiDataHandler) HandleExt() string {
-	return ".api"
+func (handler ApiDataHandler) Handle(configData *ConfigData, path string) bool {
+	configData.Lock()
+	defer configData.Unlock()
+
+	data := MockApiInfoData{}
+	err := utils.LoadFileJson(path, data)
+
+	if err != nil {
+		return false
+	}
+
+	key := fmt.Sprintf("%s,%s", data.Path, data.Method)
+
+	if v, ok := configData.MockApi[key]; ok {
+		v.Merge(data)
+	} else {
+		configData.MockApi[key] = &data
+	}
+
+	return true
 }
 
-func (collector ApiDataHandler) ParserData(fullPath string) (error, ApiData) {
-	data := ApiData{}
-	err := utils.LoadFileJson(fullPath, data)
-	return err, data
+func (handler ApiDataHandler) SupportExt(fi fs.FileInfo) bool {
+	return filepath.Ext(fi.Name()) == ".api"
 }
-
-var _ ConfigHandler[ApiData] = ApiDataHandler{}

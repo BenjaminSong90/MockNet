@@ -29,32 +29,31 @@ func (setting Setting) getString(k string, defaultValue string) string {
 	}
 }
 
-type ApiInfo struct {
-	Method        string
-	Path          string
-	KeyName       string
-	Restful       bool
-	LocalFilePath string
-	Data          map[string]map[string]interface{}
-}
+//type ApiInfo struct {
+//	Method        string
+//	Path          string
+//	KeyName       string
+//	Restful       bool
+//	LocalFilePath string
+//	Data          map[string]map[string]interface{}
+//}
 
-func (apiInfo ApiInfo) isDataApi() bool {
-	if len(apiInfo.LocalFilePath) == 0 {
-		return true
-	}
-	return false
-}
+//func (apiInfo ApiInfo) isDataApi() bool {
+//	if len(apiInfo.LocalFilePath) == 0 {
+//		return true
+//	}
+//	return false
+//}
 
 var globalSetting Setting = map[string]interface{}{
-	"proxy_host":                 "",
-	"proxy_schema":               "https",
-	"address":                    ":8080",
-	"local_api_info_path":        []string{"."},
-	"static_path":                ".",
-	"api_info":                   []ApiInfo{},
-	"file_watcher_open":          false,
-	"file_watcher_valid_ext":     ".json",
-	"file_watcher_no_reload_ext": ".tpl, .tmpl, .html",
+	"proxy_host":                  "",
+	"proxy_schema":                "https",
+	"address":                     ":8080",
+	"local_api_info_path":         []string{"."},
+	"static_path":                 ".",
+	"file_watcher_open":           false,
+	"file_watcher_valid_ext":      ".json",
+	"file_watcher_no_reload_ext":  ".tpl, .tmpl, .html",
 	"file_watcher_ignored_folder": "",
 }
 
@@ -103,59 +102,59 @@ func setStaticFilePath(v string) {
 	globalSetting.setKVOrDefault("static_path", v)
 }
 
-func GetApiInfo() *[]*ApiInfo {
-	ai := globalSetting["api_info"]
-	apiInfo, ok := ai.(*[]*ApiInfo)
-	if ok {
-		return apiInfo
-	} else {
-		return &[]*ApiInfo{}
-	}
-}
+//func GetApiInfo() *[]*ApiInfo {
+//	ai := globalSetting["api_info"]
+//	apiInfo, ok := ai.(*[]*ApiInfo)
+//	if ok {
+//		return apiInfo
+//	} else {
+//		return &[]*ApiInfo{}
+//	}
+//}
 
-func setApiInfo(v *[]*ApiInfo) {
-	if v != nil && len(*v) != 0 {
-		globalSetting["api_info"] = v
-	} else {
-		globalSetting["api_info"] = &[]*ApiInfo{}
-	}
-}
+//func setApiInfo(v *[]*ApiInfo) {
+//	if v != nil && len(*v) != 0 {
+//		globalSetting["api_info"] = v
+//	} else {
+//		globalSetting["api_info"] = &[]*ApiInfo{}
+//	}
+//}
 
-func setFileWatcherOpen(isOpen bool){
+func setFileWatcherOpen(isOpen bool) {
 	globalSetting["file_watcher_open"] = isOpen
 }
 
-func IsFileWatcherOpen()bool{
+func IsFileWatcherOpen() bool {
 	info := globalSetting["file_watcher_open"]
 	isOpen, ok := info.(bool)
-	if ok{
+	if ok {
 		return isOpen
 	} else {
 		return false
 	}
 }
 
-func setFileWatcherValidExt(v string){
+func setFileWatcherValidExt(v string) {
 	globalSetting.setKVOrDefault("file_watcher_valid_ext", v)
 }
 
-func GetFileWatcherValidExt()string{
+func GetFileWatcherValidExt() string {
 	return globalSetting.getString("file_watcher_valid_ext", ".json")
 }
 
-func setFileWatcherNoReloadExt(v string){
+func setFileWatcherNoReloadExt(v string) {
 	globalSetting.setKVOrDefault("file_watcher_no_reload_ext", v)
 }
 
-func GetFileWatcherNoReloadExt()string{
+func GetFileWatcherNoReloadExt() string {
 	return globalSetting.getString("file_watcher_no_reload_ext", ".tpl, .tmpl, .html")
 }
 
-func setFileWatcherIgnoredFolder(v string){
+func setFileWatcherIgnoredFolder(v string) {
 	globalSetting.setKVOrDefault("file_watcher_ignored_folder", v)
 }
 
-func GetFileWatcherIgnoredFolder()string{
+func GetFileWatcherIgnoredFolder() string {
 	return globalSetting.getString("file_watcher_ignored_folder", "")
 }
 

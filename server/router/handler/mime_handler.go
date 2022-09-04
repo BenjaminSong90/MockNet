@@ -7,50 +7,14 @@ import (
 	"github.com/gin-gonic/gin"
 	"io"
 	"mocknet/utils"
-	"strings"
 )
-
-// KV key value 数据
-type KV[K string | int, V string | int] struct {
-	Key   K
-	Value V
-}
-
-// KVA KV array
-type KVA[K string | int, V string | int] []KV[K, V]
-
-// K 返回 KVA 的 所有的Key
-func (kva KVA[K, V]) K() (ks []K) {
-	for _, entry := range kva {
-		ks = append(ks, entry.Key)
-	}
-	return
-}
-
-// V 返回 KVA 的 所有的Value
-func (kva KVA[K, V]) V() (vs []V) {
-	for _, entry := range kva {
-		vs = append(vs, entry.Value)
-	}
-	return
-}
-
-// KJoin 拼接 KVA 的 所有 Key
-func (kva KVA[K, V]) KJoin(sep string) string {
-	return strings.Trim(strings.Replace(fmt.Sprint(kva.K()), " ", sep, -1), "[]")
-}
-
-// VJoin 拼接 KVA 的 所有 Value
-func (kva KVA[K, V]) VJoin(sep string) string {
-	return strings.Trim(strings.Replace(fmt.Sprint(kva.V()), " ", sep, -1), "[]")
-}
 
 // RData 请求数据
 type RData struct {
-	Uri        string              //request real uri
-	Params     KVA[string, string] //request path params
-	QueryArray KVA[string, string] //request query params
-	BodyValue  string              //body 中读取到的值
+	Uri        string                    //request real uri
+	Params     utils.KVA[string, string] //request path params
+	QueryArray utils.KVA[string, string] //request query params
+	BodyValue  string                    //body 中读取到的值
 }
 
 func (data RData) GenerateKey() string {
@@ -99,7 +63,7 @@ func (handler *MimeJsonHandler) CollectParam(context *gin.Context, keyName strin
 	data := &RData{}
 	data.Uri = context.Request.URL.RequestURI()
 	for _, entry := range context.Params {
-		data.Params = append(data.Params, KV[string, string]{
+		data.Params = append(data.Params, utils.KV[string, string]{
 			Key:   entry.Key,
 			Value: entry.Value,
 		})
@@ -108,7 +72,7 @@ func (handler *MimeJsonHandler) CollectParam(context *gin.Context, keyName strin
 	for _, entry := range userCardQueryArray {
 		q := context.Query(entry)
 		if len(q) != 0 {
-			data.QueryArray = append(data.QueryArray, KV[string, string]{
+			data.QueryArray = append(data.QueryArray, utils.KV[string, string]{
 				Key:   entry,
 				Value: q,
 			})

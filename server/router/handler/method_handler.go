@@ -9,9 +9,9 @@ import (
 	"net/http"
 )
 
-type MethodHandlerFunc func(detail setting.ApiInfo) gin.HandlerFunc
+type MethodHandlerFunc func(detail setting.MockApiInfoData) gin.HandlerFunc
 
-func MethodHandler(detail *setting.ApiInfo) gin.HandlerFunc {
+func MethodHandler(detail *setting.MockApiInfoData) gin.HandlerFunc {
 	return func(context *gin.Context) {
 		handleRequest(context, detail)
 	}
@@ -45,15 +45,15 @@ func getRequestHandler(context *gin.Context) MimeParamHandler {
 
 }
 
-func handleRequest(context *gin.Context, detail *setting.ApiInfo) {
+func handleRequest(context *gin.Context, detail *setting.MockApiInfoData) {
 	logger.D("request full path: " + context.FullPath())
 
 	handler := getRequestHandler(context)
-	data := handler.CollectParam(context, detail.KeyName, []string{})
+	data := handler.CollectParam(context, detail.BodyKey, detail.QueryKey)
 	key := data.GenerateKey()
 	logger.E("key: %s", key)
 	logger.E("Data: %s", fmt.Sprint(detail.Data))
-	if v, ok := detail.Data[key]; ok {
+	if v, ok := detail.GetMockData(key); ok {
 		context.JSON(http.StatusOK, v)
 		return
 	}

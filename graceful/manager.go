@@ -10,7 +10,7 @@ import (
 )
 
 type (
-	RunningJob func(context.Context) error
+	RunningJob  func(context.Context) error
 	ShutdownJob func() error
 )
 
@@ -23,11 +23,9 @@ type Manager struct {
 	runningWaitGroup  *routineGroup
 	errors            []error
 	runAtShutdown     []ShutdownJob
-
 }
 
 var manager *Manager
-
 
 func (g *Manager) handleSignals(ctx context.Context) {
 	c := make(chan os.Signal, 1)
@@ -128,7 +126,6 @@ func (g *Manager) AddRunningJob(f RunningJob) {
 	})
 }
 
-
 func (g *Manager) Done() <-chan struct{} {
 	return g.waitCtx.Done()
 }
@@ -142,7 +139,7 @@ var startOnce = sync.Once{}
 func InitManager(ctx context.Context) *Manager {
 
 	startOnce.Do(func() {
-		manager =  &Manager{
+		manager = &Manager{
 			lock:             &sync.RWMutex{},
 			errors:           make([]error, 0),
 			runningWaitGroup: createRoutineGroup(),

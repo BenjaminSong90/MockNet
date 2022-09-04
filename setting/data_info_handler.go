@@ -2,30 +2,50 @@ package setting
 
 import (
 	"fmt"
+	"io/fs"
 	"mocknet/utils"
+	"path/filepath"
 )
 
 type MockData struct {
-	Path string      `json:"path"` //数据对应path
-	Key  string      `json:"key"`  //param+query+funcode生成的key
-	Data interface{} `json:"data"` //mock 返回的数据
+	Path   string      `json:"path"`   //数据对应path
+	Method string      `json:"method"` // 请求方法
+	Key    string      `json:"key"`    //param+query+funcode生成的key
+	Close  bool        `json:"close"`  //是否使用当前数据
+	Data   interface{} `json:"data"`   //mock 返回的数据
 }
 
 func (m MockData) String() string {
-	return fmt.Sprintf("{Path: %s, Key: %s, Data: %v}", m.Path, m.Key, m.Data)
+	return fmt.Sprintf("{Path: %s, Method: %s, Key: %s, Data: %v}", m.Path, m.Method, m.Key, m.Data)
 }
 
 type MockDataHandler struct {
 }
 
-func (collector MockDataHandler) HandleExt() string {
-	return ".data"
+func (handler MockDataHandler) Handle(configData *ConfigData, path string) bool {
+	configData.Lock()
+	defer configData.Unlock()
+
+	mockData := MockData{}
+	err := utils.LoadFileJson(path, mockData)
+
+	if err != nil || mockData.Close {
+		return false
+	}
+
+	key := fmt.Sprintf("%s,%s", mockData.Path, mockData.Method)
+
+	if v, ok := configData.MockData[key]; ok {
+		v[mockData.Key] = mockData
+	} else {
+		mockDataMap := make(map[string]MockData)
+		configData.MockData[key] = mockDataMap
+		mockDataMap[mockData.Key] = mockData
+	}
+
+	return true
 }
 
-func (collector MockDataHandler) ParserData(fullPath string) (error, MockData) {
-	data := MockData{}
-	err := utils.LoadFileJson(fullPath, data)
-	return err, data
+func (handler MockDataHandler) SupportExt(fi fs.FileInfo) bool {
+	return filepath.Ext(fi.Name()) == ".data"
 }
-
-var _ ConfigHandler[MockData] = MockDataHandler{}

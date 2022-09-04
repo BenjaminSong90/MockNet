@@ -8,19 +8,19 @@ import (
 )
 
 var defaultConfigInfo = "{\n  " +
-		"\"proxy_host\": \"proxy_host\",\n  " +
-		"\"proxy_scheme\": \"proxy_scheme\",\n  " +
-		"\"address\": \":8080\",\n  " +
-		"\"mock_api_path\": [\n    " +
-			"\"%s\"\n  " +
-		"],\n  " +
-		"\"file_path\": \"%s\",\n  " +
-		"\"file_watcher\": true,\n  " +
-		"\"file_watcher_config\": {\n    " +
-			"\"valid_ext\": \".json\",\n    " +
-			"\"no_reload_ext\": \".tpl, .tmpl, .html\",\n    " +
-			"\"ignored_folder\" : \"\"\n  " +
-		"}" +
+	"\"proxy_host\": \"proxy_host\",\n  " +
+	"\"proxy_scheme\": \"proxy_scheme\",\n  " +
+	"\"address\": \":8080\",\n  " +
+	"\"mock_api_path\": [\n    " +
+	"\"%s\"\n  " +
+	"],\n  " +
+	"\"file_path\": \"%s\",\n  " +
+	"\"file_watcher\": true,\n  " +
+	"\"file_watcher_config\": {\n    " +
+	"\"valid_ext\": \".json\",\n    " +
+	"\"no_reload_ext\": \".tpl, .tmpl, .html\",\n    " +
+	"\"ignored_folder\" : \"\"\n  " +
+	"}" +
 	"\n}"
 
 var defaultApiInfo = "{\n" +
@@ -45,8 +45,8 @@ func CheckModuleOrCreate() {
 	}
 
 	configPath := filepath.Join(modulePath, "config.json")
-	apiDirPath := filepath.Join(modulePath , "api")
-	apiPath := filepath.Join(modulePath , "api", "api.json")
+	apiDirPath := filepath.Join(modulePath, "api")
+	apiPath := filepath.Join(modulePath, "api", "api.json")
 	staticDirPath := filepath.Join(modulePath, "static")
 
 	if Exists(configPath) {
@@ -54,38 +54,35 @@ func CheckModuleOrCreate() {
 	}
 
 	err = createAndWriter(configPath, fmt.Sprintf(defaultConfigInfo, apiDirPath, staticDirPath))
-	if err != nil{
+	if err != nil {
 		return
 	}
 
-	if !Exists(apiDirPath){
+	if !Exists(apiDirPath) {
 		err = os.Mkdir(apiDirPath, os.ModePerm)
-		if err == nil{
+		if err == nil {
 			_ = createAndWriter(apiPath, defaultApiInfo)
 		}
 	}
 
-
-	if !Exists(staticDirPath){
+	if !Exists(staticDirPath) {
 		_ = os.Mkdir(staticDirPath, os.ModePerm)
 	}
 
-
-
 }
 
-func createAndWriter(path string, config string) (err error){
+func createAndWriter(path string, config string) (err error) {
 	file, err := os.OpenFile(path, os.O_WRONLY|os.O_CREATE, os.ModePerm)
 	if err != nil {
 		return err
 	}
 
-	defer  file.Close()
+	defer file.Close()
 
 	writer := bufio.NewWriter(file)
 	_, err = writer.WriteString(config)
 
-	if err != nil{
+	if err != nil {
 		return err
 	}
 	return writer.Flush()
