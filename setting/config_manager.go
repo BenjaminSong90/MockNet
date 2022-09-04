@@ -8,13 +8,13 @@ import (
 )
 
 type ConfigData struct {
-	MockData map[string]map[string]MockData // map[path+method]map[param+query+funcode]MockData
-	MockApi  map[string]*MockApiInfoData    // map[path+method]MockApiInfoData
+	MockData map[string]map[string]*MockData // map[path+method]map[param+query+funcode]MockData
+	MockApi  map[string]*MockApiInfoData     // map[path+method]MockApiInfoData
 	sync.Mutex
 }
 
 var GlobalConfigData = ConfigData{
-	MockData: make(map[string]map[string]MockData),
+	MockData: make(map[string]map[string]*MockData),
 	MockApi:  make(map[string]*MockApiInfoData),
 }
 
@@ -50,7 +50,6 @@ func HandleConfigFile(path string, fi fs.FileInfo) {
 
 // file路径集合 加载json文件 信息
 func loadApiInfo(filePathList []string) {
-
 	for _, p := range filePathList {
 		_ = filepath.Walk(p, func(jsonPath string, info fs.FileInfo, err error) error {
 			if err == nil && !info.IsDir() {

@@ -10,12 +10,12 @@ import (
 )
 
 type MockApiInfoData struct {
-	Path         string      `json:"path"`          //url path
-	QueryKey     []string    `json:"query_key"`     //请求的关心的query信息
-	Method       string      `json:"method"`        //request method e.g:POST/GET
-	BodyKey      string      `json:"body_key"`      //请求body中的key
-	Data         MockApiData `json:"data"`          //数据配置信息
-	NeedRedirect bool        `json:"need_redirect"` //是否需求重定向
+	Path         string   `json:"path"`          //url path
+	QueryKey     []string `json:"query_key"`     //请求的关心的query信息
+	Method       string   `json:"method"`        //request method e.g:POST/GET
+	BodyKey      string   `json:"body_key"`      //请求body中的key
+	NeedRedirect bool     `json:"need_redirect"` //是否需求重定向
+	Plugin       string   `json:"plugin"`
 }
 
 func (apiData *MockApiInfoData) String() string {
@@ -24,7 +24,7 @@ func (apiData *MockApiInfoData) String() string {
 		strings.Join(apiData.QueryKey, ","),
 		apiData.Method,
 		apiData.BodyKey,
-		apiData.Data,
+		apiData.Plugin,
 		apiData.NeedRedirect)
 }
 
@@ -34,11 +34,11 @@ func (apiData *MockApiInfoData) Merge(data MockApiInfoData) bool {
 		return false
 	}
 
-	if apiData.Data != data.Data || apiData.BodyKey != data.BodyKey {
+	if apiData.Plugin != data.Plugin || apiData.BodyKey != data.BodyKey {
 		logger.E("api data info is change:\n origin: %s,\n new: %s \n", apiData, &data)
 	}
 
-	apiData.Data = data.Data
+	apiData.Plugin = data.Plugin
 	apiData.QueryKey = data.QueryKey
 	apiData.BodyKey = data.BodyKey
 	apiData.NeedRedirect = data.NeedRedirect
@@ -46,7 +46,7 @@ func (apiData *MockApiInfoData) Merge(data MockApiInfoData) bool {
 	return true
 }
 
-func (apiData *MockApiInfoData) GetMockData(key string) (interface{}, bool) {
+func (apiData *MockApiInfoData) GetMockData(key string) (*MockData, bool) {
 	k := fmt.Sprintf("%s,%s", apiData.Path, apiData.Method)
 
 	if v, ok := GlobalConfigData.MockData[k]; ok {
@@ -57,15 +57,6 @@ func (apiData *MockApiInfoData) GetMockData(key string) (interface{}, bool) {
 	return nil, false
 }
 
-type MockApiData struct {
-	Plugin     string `json:"plugin"`
-	FolderPath string `json:"folder_path"`
-}
-
-func (data MockApiData) String() string {
-	return fmt.Sprintf("{ Plugin: %s, FolderPath:%s}", data.Plugin, data.FolderPath)
-}
-
 type ApiDataHandler struct {
 }
 
@@ -74,9 +65,10 @@ func (handler ApiDataHandler) Handle(configData *ConfigData, path string) bool {
 	defer configData.Unlock()
 
 	data := MockApiInfoData{}
-	err := utils.LoadFileJson(path, data)
+	err := utils.LoadFileJson(path, &data)
 
 	if err != nil {
+		logger.E("path: %s, error info: %s", path, err.Error())
 		return false
 	}
 

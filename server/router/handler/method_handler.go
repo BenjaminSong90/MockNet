@@ -52,9 +52,9 @@ func handleRequest(context *gin.Context, detail *setting.MockApiInfoData) {
 	data := handler.CollectParam(context, detail.BodyKey, detail.QueryKey)
 	key := data.GenerateKey()
 	logger.E("key: %s", key)
-	logger.E("Data: %s", fmt.Sprint(detail.Data))
+	logger.E("Data: %s", fmt.Sprint(detail.GetMockData(key)))
 	if v, ok := detail.GetMockData(key); ok {
-		context.JSON(http.StatusOK, v)
+		context.JSON(http.StatusOK, v.Data)
 		return
 	}
 

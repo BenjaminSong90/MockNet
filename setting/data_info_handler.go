@@ -27,7 +27,7 @@ func (handler MockDataHandler) Handle(configData *ConfigData, path string) bool 
 	defer configData.Unlock()
 
 	mockData := MockData{}
-	err := utils.LoadFileJson(path, mockData)
+	err := utils.LoadFileJson(path, &mockData)
 
 	if err != nil || mockData.Close {
 		return false
@@ -36,11 +36,11 @@ func (handler MockDataHandler) Handle(configData *ConfigData, path string) bool 
 	key := fmt.Sprintf("%s,%s", mockData.Path, mockData.Method)
 
 	if v, ok := configData.MockData[key]; ok {
-		v[mockData.Key] = mockData
+		v[mockData.Key] = &mockData
 	} else {
-		mockDataMap := make(map[string]MockData)
+		mockDataMap := make(map[string]*MockData)
 		configData.MockData[key] = mockDataMap
-		mockDataMap[mockData.Key] = mockData
+		mockDataMap[mockData.Key] = &mockData
 	}
 
 	return true
