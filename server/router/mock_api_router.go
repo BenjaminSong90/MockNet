@@ -8,7 +8,7 @@ import (
 	"strings"
 )
 
-func InitApi(router *gin.Engine, apiInfoList map[string]*setting.MockApiInfoData) {
+func InitApi(router *gin.Engine, apiInfoList map[string]*setting.Api) {
 	for _, apiDetail := range apiInfoList {
 
 		switch strings.ToUpper(apiDetail.Method) {

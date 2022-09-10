@@ -7,7 +7,7 @@ import (
 	"path/filepath"
 )
 
-type MockData struct {
+type ApiData struct {
 	Path   string      `json:"path"`   //数据对应path
 	Method string      `json:"method"` // 请求方法
 	Key    string      `json:"key"`    //param+query+funcode生成的key
@@ -15,7 +15,7 @@ type MockData struct {
 	Data   interface{} `json:"data"`   //mock 返回的数据
 }
 
-func (m MockData) String() string {
+func (m ApiData) String() string {
 	return fmt.Sprintf("{Path: %s, Method: %s, Key: %s, Data: %v}", m.Path, m.Method, m.Key, m.Data)
 }
 
@@ -26,7 +26,7 @@ func (handler MockDataHandler) Handle(configData *ConfigData, path string) bool 
 	configData.Lock()
 	defer configData.Unlock()
 
-	mockData := MockData{}
+	mockData := ApiData{}
 	err := utils.LoadFileJson(path, &mockData)
 
 	if err != nil || mockData.Close {
@@ -38,7 +38,7 @@ func (handler MockDataHandler) Handle(configData *ConfigData, path string) bool 
 	if v, ok := configData.MockData[key]; ok {
 		v[mockData.Key] = &mockData
 	} else {
-		mockDataMap := make(map[string]*MockData)
+		mockDataMap := make(map[string]*ApiData)
 		configData.MockData[key] = mockDataMap
 		mockDataMap[mockData.Key] = &mockData
 	}

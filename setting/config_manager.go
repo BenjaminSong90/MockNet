@@ -8,14 +8,14 @@ import (
 )
 
 type ConfigData struct {
-	MockData map[string]map[string]*MockData // map[path+method]map[param+query+funcode]MockData
-	MockApi  map[string]*MockApiInfoData     // map[path+method]MockApiInfoData
+	MockData map[string]map[string]*ApiData // map[path+method]map[param+query+funcode]ApiData
+	MockApi  map[string]*Api                // map[path+method]MockApiInfoData
 	sync.Mutex
 }
 
 var GlobalConfigData = ConfigData{
-	MockData: make(map[string]map[string]*MockData),
-	MockApi:  make(map[string]*MockApiInfoData),
+	MockData: make(map[string]map[string]*ApiData),
+	MockApi:  make(map[string]*Api),
 }
 
 type ConfigHandler interface {

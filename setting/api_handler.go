@@ -9,7 +9,7 @@ import (
 	"strings"
 )
 
-type MockApiInfoData struct {
+type Api struct {
 	Path         string   `json:"path"`          //url path
 	QueryKey     []string `json:"query_key"`     //请求的关心的query信息
 	Method       string   `json:"method"`        //request method e.g:POST/GET
@@ -18,7 +18,7 @@ type MockApiInfoData struct {
 	Plugin       string   `json:"plugin"`
 }
 
-func (apiData *MockApiInfoData) String() string {
+func (apiData *Api) String() string {
 	return fmt.Sprintf("{ Path: %s, QueryKey:%s, Method: %s, BodyKey: %s, Data: %s, NeedRedirect: %t}",
 		apiData.Path,
 		strings.Join(apiData.QueryKey, ","),
@@ -29,7 +29,7 @@ func (apiData *MockApiInfoData) String() string {
 }
 
 // Merge merge path and method equal data to current data, success return true , fail return false
-func (apiData *MockApiInfoData) Merge(data MockApiInfoData) bool {
+func (apiData *Api) Merge(data Api) bool {
 	if apiData.Path != data.Path || apiData.Method != data.Method {
 		return false
 	}
@@ -46,7 +46,7 @@ func (apiData *MockApiInfoData) Merge(data MockApiInfoData) bool {
 	return true
 }
 
-func (apiData *MockApiInfoData) GetMockData(key string) (*MockData, bool) {
+func (apiData *Api) GetMockData(key string) (*ApiData, bool) {
 	k := fmt.Sprintf("%s,%s", apiData.Path, apiData.Method)
 
 	if v, ok := GlobalConfigData.MockData[k]; ok {
@@ -64,7 +64,7 @@ func (handler ApiDataHandler) Handle(configData *ConfigData, path string) bool {
 	configData.Lock()
 	defer configData.Unlock()
 
-	data := MockApiInfoData{}
+	data := Api{}
 	err := utils.LoadFileJson(path, &data)
 
 	if err != nil {
