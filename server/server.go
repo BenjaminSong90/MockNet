@@ -43,7 +43,7 @@ func (server *Server) Start() error {
 		r.StaticFS("/file", gin.Dir(setting.GetStaticFilePath(), true))
 	}
 
-	router.InitApi(r, setting.GlobalConfigData.MockApi)
+	router.InitApi(r, setting.GlobalConfigData.Api)
 
 	srv := &http.Server{
 		Addr:    setting.GetStartAddress(), // listen and serve on 0.0.0.0:8080 (for windows "localhost:8080")

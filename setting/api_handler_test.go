@@ -5,14 +5,14 @@ import (
 )
 
 func TestMerge(t *testing.T) {
-	apiData := &MockApiInfoData{
+	apiData := &Api{
 		Path:         "old_path",
 		QueryKey:     []string{"ok", "name"},
 		Method:       "GET",
 		BodyKey:      "get_info",
 		NeedRedirect: true,
 	}
-	newApiData := &MockApiInfoData{
+	newApiData := &Api{
 		Path:         "old_path",
 		QueryKey:     []string{"ok", "name", "hh"},
 		Method:       "POST",
@@ -20,13 +20,13 @@ func TestMerge(t *testing.T) {
 		NeedRedirect: true,
 	}
 
-	if apiData.Merge(*newApiData) {
+	if apiData.Merge(newApiData) {
 		t.Error()
 	}
 
 	newApiData.Method = "GET"
 
-	if !apiData.Merge(*newApiData) {
+	if !apiData.Merge(newApiData) {
 		t.Error()
 	}
 

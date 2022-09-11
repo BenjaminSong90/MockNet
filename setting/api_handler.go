@@ -16,6 +16,7 @@ type Api struct {
 	BodyKey      string   `json:"body_key"`      //请求body中的key
 	NeedRedirect bool     `json:"need_redirect"` //是否需求重定向
 	Plugin       string   `json:"plugin"`
+	Data         ApiData  `json:"data"` //api对应的数据
 }
 
 func (apiData *Api) String() string {
@@ -29,7 +30,7 @@ func (apiData *Api) String() string {
 }
 
 // Merge merge path and method equal data to current data, success return true , fail return false
-func (apiData *Api) Merge(data Api) bool {
+func (apiData *Api) Merge(data *Api) bool {
 	if apiData.Path != data.Path || apiData.Method != data.Method {
 		return false
 	}
@@ -49,7 +50,7 @@ func (apiData *Api) Merge(data Api) bool {
 func (apiData *Api) GetMockData(key string) (*ApiData, bool) {
 	k := fmt.Sprintf("%s,%s", apiData.Path, apiData.Method)
 
-	if v, ok := GlobalConfigData.MockData[k]; ok {
+	if v, ok := GlobalConfigData.Data[k]; ok {
 		if md, ok := v[key]; ok {
 			return md, true
 		}
@@ -57,12 +58,10 @@ func (apiData *Api) GetMockData(key string) (*ApiData, bool) {
 	return nil, false
 }
 
-type ApiDataHandler struct {
+type ApiHandler struct {
 }
 
-func (handler ApiDataHandler) Handle(configData *ConfigData, path string) bool {
-	configData.Lock()
-	defer configData.Unlock()
+func (handler ApiHandler) Handle(path string) bool {
 
 	data := Api{}
 	err := utils.LoadFileJson(path, &data)
@@ -74,15 +73,16 @@ func (handler ApiDataHandler) Handle(configData *ConfigData, path string) bool {
 
 	key := fmt.Sprintf("%s,%s", data.Path, data.Method)
 
-	if v, ok := configData.MockApi[key]; ok {
-		v.Merge(data)
-	} else {
-		configData.MockApi[key] = &data
+	AppendApi(key, &data)
+	if !data.Data.IsEmpty() {
+		AppendApiData(data.Data.GenerateSaveKey(), &data.Data)
 	}
 
 	return true
 }
 
-func (handler ApiDataHandler) SupportExt(fi fs.FileInfo) bool {
+func (handler ApiHandler) SupportExt(fi fs.FileInfo) bool {
 	return filepath.Ext(fi.Name()) == ".api"
 }
+
+var _ ConfigHandler = ApiHandler{}

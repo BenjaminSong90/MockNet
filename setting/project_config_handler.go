@@ -75,7 +75,8 @@ func (setting Setting) getString(k string, defaultValue string) string {
 	}
 }
 
-var globalSetting Setting = map[string]interface{}{
+// 项目设置的模版
+var projectSetting Setting = map[string]interface{}{
 	"proxy_host":                  "",
 	"proxy_schema":                "https",
 	"address":                     ":8080",
@@ -88,30 +89,30 @@ var globalSetting Setting = map[string]interface{}{
 }
 
 func GetProxyHost() string {
-	return globalSetting.getString("proxy_host", "")
+	return projectSetting.getString("proxy_host", "")
 }
 func setProxyHost(v string) {
-	globalSetting.setKVOrDefault("proxy_host", v)
+	projectSetting.setKVOrDefault("proxy_host", v)
 }
 
 func GetProxySchema() string {
-	return globalSetting.getString("proxy_schema", "https")
+	return projectSetting.getString("proxy_schema", "https")
 }
 
 func setProxySchema(v string) {
-	globalSetting.setKVOrDefault("proxy_schema", v)
+	projectSetting.setKVOrDefault("proxy_schema", v)
 }
 
 func GetStartAddress() string {
-	return globalSetting.getString("address", ":8080")
+	return projectSetting.getString("address", ":8080")
 }
 
 func setStartAddress(v string) {
-	globalSetting.setKVOrDefault("address", v)
+	projectSetting.setKVOrDefault("address", v)
 }
 
 func GetLocalApiInfoPath() []string {
-	v := globalSetting["local_api_info_path"]
+	v := projectSetting["local_api_info_path"]
 	localApiInfoPath, ok := v.([]string)
 	if ok {
 		return localApiInfoPath
@@ -121,23 +122,23 @@ func GetLocalApiInfoPath() []string {
 }
 
 func setLocalApiInfoPath(v []string) {
-	globalSetting.setKVOrDefault("local_api_info_path", v)
+	projectSetting.setKVOrDefault("local_api_info_path", v)
 }
 
 func GetStaticFilePath() string {
-	return globalSetting.getString("static_path", ".")
+	return projectSetting.getString("static_path", ".")
 }
 
 func setStaticFilePath(v string) {
-	globalSetting.setKVOrDefault("static_path", v)
+	projectSetting.setKVOrDefault("static_path", v)
 }
 
 func setFileWatcherOpen(isOpen bool) {
-	globalSetting["file_watcher_open"] = isOpen
+	projectSetting["file_watcher_open"] = isOpen
 }
 
 func IsFileWatcherOpen() bool {
-	info := globalSetting["file_watcher_open"]
+	info := projectSetting["file_watcher_open"]
 	isOpen, ok := info.(bool)
 	if ok {
 		return isOpen
@@ -147,27 +148,27 @@ func IsFileWatcherOpen() bool {
 }
 
 func setFileWatcherValidExt(v string) {
-	globalSetting.setKVOrDefault("file_watcher_valid_ext", v)
+	projectSetting.setKVOrDefault("file_watcher_valid_ext", v)
 }
 
 func GetFileWatcherValidExt() string {
-	return globalSetting.getString("file_watcher_valid_ext", ".json")
+	return projectSetting.getString("file_watcher_valid_ext", ".json")
 }
 
 func setFileWatcherNoReloadExt(v string) {
-	globalSetting.setKVOrDefault("file_watcher_no_reload_ext", v)
+	projectSetting.setKVOrDefault("file_watcher_no_reload_ext", v)
 }
 
 func GetFileWatcherNoReloadExt() string {
-	return globalSetting.getString("file_watcher_no_reload_ext", ".tpl, .tmpl, .html")
+	return projectSetting.getString("file_watcher_no_reload_ext", ".tpl, .tmpl, .html")
 }
 
 func setFileWatcherIgnoredFolder(v string) {
-	globalSetting.setKVOrDefault("file_watcher_ignored_folder", v)
+	projectSetting.setKVOrDefault("file_watcher_ignored_folder", v)
 }
 
 func GetFileWatcherIgnoredFolder() string {
-	return globalSetting.getString("file_watcher_ignored_folder", "")
+	return projectSetting.getString("file_watcher_ignored_folder", "")
 }
 
 func CheckProxyInfo() bool {

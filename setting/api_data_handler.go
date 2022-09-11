@@ -19,12 +19,22 @@ func (m ApiData) String() string {
 	return fmt.Sprintf("{Path: %s, Method: %s, Key: %s, Data: %v}", m.Path, m.Method, m.Key, m.Data)
 }
 
-type MockDataHandler struct {
+func (m ApiData) IsEmpty() bool {
+	if m.Path == "" || m.Method == "" {
+		return true
+	}
+
+	return false
 }
 
-func (handler MockDataHandler) Handle(configData *ConfigData, path string) bool {
-	configData.Lock()
-	defer configData.Unlock()
+func (m ApiData) GenerateSaveKey() string {
+	return fmt.Sprintf("%s,%s", m.Path, m.Method)
+}
+
+type ApiDataHandler struct {
+}
+
+func (handler ApiDataHandler) Handle(path string) bool {
 
 	mockData := ApiData{}
 	err := utils.LoadFileJson(path, &mockData)
@@ -33,19 +43,13 @@ func (handler MockDataHandler) Handle(configData *ConfigData, path string) bool 
 		return false
 	}
 
-	key := fmt.Sprintf("%s,%s", mockData.Path, mockData.Method)
-
-	if v, ok := configData.MockData[key]; ok {
-		v[mockData.Key] = &mockData
-	} else {
-		mockDataMap := make(map[string]*ApiData)
-		configData.MockData[key] = mockDataMap
-		mockDataMap[mockData.Key] = &mockData
-	}
+	AppendApiData(mockData.GenerateSaveKey(), &mockData)
 
 	return true
 }
 
-func (handler MockDataHandler) SupportExt(fi fs.FileInfo) bool {
+func (handler ApiDataHandler) SupportExt(fi fs.FileInfo) bool {
 	return filepath.Ext(fi.Name()) == ".data"
 }
+
+var _ ConfigHandler = ApiDataHandler{}

@@ -23,20 +23,27 @@ var defaultConfigInfo = "{\n  " +
 	"}" +
 	"\n}"
 
-var defaultApiInfo = "{\n" +
-	"  \"api\":[\n" +
-	"    {\n" +
-	"      \"path\": \"/hello_wrold\",\n" +
-	"      \"method\": \"GET\",\n" +
-	"      \"is_restful\": true,\n" +
-	"      \"data\": {\n" +
-	"        \"/hello_wrold\": {\n" +
-	"          \"info\": \"hello world\"\n" +
-	"        }\n" +
-	"      }\n" +
-	"    }\n" +
-	"  ]\n" +
-	"}"
+var defaultApi = `
+{
+	"path":"/hi",
+	"method":"GET",
+	"need_redirect":true,
+	"body_key":"",
+	"query_key":[],
+	"data_plugin":""
+}
+`
+
+var defaultData = `
+{
+	"path":"/hi",
+	"method":"GET",
+	"key":"",
+	"data":{
+		"say":"hello, world!"
+	}
+}
+`
 
 func CheckModuleOrCreate() {
 	modulePath, err := os.Getwd()
@@ -46,7 +53,8 @@ func CheckModuleOrCreate() {
 
 	configPath := filepath.Join(modulePath, "config.json")
 	apiDirPath := filepath.Join(modulePath, "api")
-	apiPath := filepath.Join(modulePath, "api", "api.json")
+	apiPath := filepath.Join(modulePath, "api", "hi.api")
+	dataPath := filepath.Join(modulePath, "api", "hi.data")
 	staticDirPath := filepath.Join(modulePath, "static")
 
 	if Exists(configPath) {
@@ -61,7 +69,8 @@ func CheckModuleOrCreate() {
 	if !Exists(apiDirPath) {
 		err = os.Mkdir(apiDirPath, os.ModePerm)
 		if err == nil {
-			_ = createAndWriter(apiPath, defaultApiInfo)
+			_ = createAndWriter(apiPath, defaultApi)
+			_ = createAndWriter(dataPath, defaultData)
 		}
 	}
 

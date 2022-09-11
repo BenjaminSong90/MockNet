@@ -7,28 +7,58 @@ import (
 	"sync"
 )
 
-type ConfigData struct {
-	MockData map[string]map[string]*ApiData // map[path+method]map[param+query+funcode]ApiData
-	MockApi  map[string]*Api                // map[path+method]MockApiInfoData
+type MockConfigData struct {
+	Data map[string]map[string]*ApiData // map[path+method]map[param+query+funcCode]ApiData
+	Api  map[string]*Api                // map[path+method]MockApiInfoData
 	sync.Mutex
 }
 
-var GlobalConfigData = ConfigData{
-	MockData: make(map[string]map[string]*ApiData),
-	MockApi:  make(map[string]*Api),
+var GlobalConfigData = MockConfigData{
+	Data: make(map[string]map[string]*ApiData),
+	Api:  make(map[string]*Api),
+}
+
+func AppendApiData(key string, mockData *ApiData) {
+	GlobalConfigData.Lock()
+	defer GlobalConfigData.Unlock()
+
+	if v, ok := GlobalConfigData.Data[key]; ok {
+		v[mockData.Key] = mockData
+	} else {
+		mockDataMap := make(map[string]*ApiData)
+		GlobalConfigData.Data[key] = mockDataMap
+		mockDataMap[mockData.Key] = mockData
+	}
+}
+
+func ClearConfigData() {
+	GlobalConfigData.Lock()
+	defer GlobalConfigData.Unlock()
+	GlobalConfigData.Data = make(map[string]map[string]*ApiData)
+	GlobalConfigData.Api = make(map[string]*Api)
+}
+
+func AppendApi(key string, api *Api) {
+	GlobalConfigData.Lock()
+	defer GlobalConfigData.Unlock()
+	if v, ok := GlobalConfigData.Api[key]; ok {
+		v.Merge(api)
+	} else {
+		GlobalConfigData.Api[key] = api
+	}
 }
 
 type ConfigHandler interface {
 	SupportExt(fi fs.FileInfo) bool
 
-	Handle(data *ConfigData, path string) bool
+	Handle(path string) bool
 }
 
 // EmptyConfigHandler help print not support file ext info
 type EmptyConfigHandler struct {
 }
 
-func (handler EmptyConfigHandler) Handle(_ *ConfigData, path string) bool {
+func (handler EmptyConfigHandler) Handle(path string) bool {
 	logger.W("file: %s is not handle", path)
 	return true
 }
@@ -37,12 +67,12 @@ func (handler EmptyConfigHandler) SupportExt(_ fs.FileInfo) bool {
 	return true
 }
 
-var configS = []ConfigHandler{ApiDataHandler{}, MockDataHandler{}, EmptyConfigHandler{}}
+var configHandlers = []ConfigHandler{ApiHandler{}, ApiDataHandler{}, EmptyConfigHandler{}}
 
 // HandleConfigFile handle config file
 func HandleConfigFile(path string, fi fs.FileInfo) {
-	for _, handler := range configS {
-		if handler.SupportExt(fi) && handler.Handle(&GlobalConfigData, path) {
+	for _, handler := range configHandlers {
+		if handler.SupportExt(fi) && handler.Handle(path) {
 			break
 		}
 	}
