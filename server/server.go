@@ -4,7 +4,6 @@ import (
 	"context"
 	"github.com/gin-gonic/gin"
 	"golang.org/x/sync/errgroup"
-	"log"
 	"mocknet/logger"
 	"mocknet/middleware"
 	"mocknet/server/router"
@@ -18,7 +17,7 @@ type Server struct {
 	cancel     context.CancelFunc
 }
 
-func New() *Server {
+func CreateServer() *Server {
 
 	return &Server{}
 }
@@ -64,12 +63,12 @@ func (server *Server) listenAndServe() error {
 		return server.httpServer.Shutdown(ctx)
 	})
 	g.Go(func() error {
-		logger.W("Server  Start...")
+		logger.D("Server  Start...")
 		if err := server.httpServer.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-			log.Println("Error Shutdown Server ...")
+			logger.W("Error Shutdown Server ...")
 			return err
 		}
-		logger.W("Normal Shutdown Server ...")
+		logger.D("Normal Shutdown Server ...")
 		return nil
 	})
 	return g.Wait()

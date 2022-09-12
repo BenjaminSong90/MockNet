@@ -20,7 +20,7 @@ func init() {
 func StartServer(ctx context.Context) {
 	for {
 		var container = Container{}
-		container.Start(New())
+		container.Start(CreateServer())
 		select {
 		case reStart := <-stopChannel:
 			container.CloseWithWait()

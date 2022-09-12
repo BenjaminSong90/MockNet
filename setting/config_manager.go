@@ -31,6 +31,7 @@ func AppendApiData(key string, mockData *ApiData) {
 	}
 }
 
+// ClearConfigData 清除api 相关的数据缓存
 func ClearConfigData() {
 	GlobalConfigData.Lock()
 	defer GlobalConfigData.Unlock()
@@ -80,6 +81,7 @@ func HandleConfigFile(path string, fi fs.FileInfo) {
 
 // file路径集合 加载json文件 信息
 func loadApiInfo(filePathList []string) {
+	ClearConfigData()
 	for _, p := range filePathList {
 		_ = filepath.Walk(p, func(jsonPath string, info fs.FileInfo, err error) error {
 			if err == nil && !info.IsDir() {
