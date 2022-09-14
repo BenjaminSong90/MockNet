@@ -63,19 +63,20 @@ type ApiHandler struct {
 
 func (handler ApiHandler) Handle(path string) bool {
 
-	data := Api{}
-	err := utils.LoadFileJson(path, &data)
+	api := Api{}
+	err := utils.LoadFileJson(path, &api)
 
 	if err != nil {
 		logger.E("path: %s, error info: %s", path, err.Error())
 		return false
 	}
 
-	key := fmt.Sprintf("%s,%s", data.Path, data.Method)
+	key := fmt.Sprintf("%s,%s", api.Path, api.Method)
 
-	AppendApi(key, &data)
-	if !data.Data.IsEmpty() {
-		AppendApiData(data.Data.GenerateSaveKey(), &data.Data)
+	AppendApi(key, &api)
+	api.Data.Path = api.Path
+	if !api.Data.IsEmpty() {
+		AppendApiData(api.Data.GenerateSaveKey(), &api.Data)
 	}
 
 	return true

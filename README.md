@@ -30,7 +30,7 @@ api入口的配置文件，配置文件的拓展名是 .api, 例如 a接口的�
 	"query_key":[],
 	"plugin":"xxx.js",
 	"data":{//这不是必要配置，如果这个api下面只有这个一个结果可以在这里配置
-		"path":"/name/info/:age",
+		"path":"/name/info/:age",//这里的path 会被api的path替换掉
 		"method":"GET",
 		"key":"param+query+funcode",
 		"data":{

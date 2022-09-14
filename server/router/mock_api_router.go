@@ -22,7 +22,6 @@ func InitApi(router *gin.Engine, apiInfoList map[string]*setting.Api) {
 			router.PUT(apiDetail.Path, handler.MethodHandler(apiDetail))
 		default:
 			logger.E("this method not support %s", apiDetail.Method)
-			//router.GET(apiDetail.Path, handler.MethodHandler(apiDetail))
 		}
 	}
 }
