@@ -73,10 +73,10 @@ func (handler ApiHandler) Handle(path string) bool {
 
 	key := fmt.Sprintf("%s,%s", api.Path, api.Method)
 
-	AppendApi(key, &api)
+	GlobalConfigData.AppendApi(key, &api)
 	api.Data.Path = api.Path
 	if !api.Data.IsEmpty() {
-		AppendApiData(api.Data.GenerateSaveKey(), &api.Data)
+		GlobalConfigData.AppendApiData(api.Data.GenerateSaveKey(), &api.Data)
 	}
 
 	return true

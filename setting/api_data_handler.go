@@ -43,7 +43,7 @@ func (handler ApiDataHandler) Handle(path string) bool {
 		return false
 	}
 
-	AppendApiData(mockData.GenerateSaveKey(), &mockData)
+	GlobalConfigData.AppendApiData(mockData.GenerateSaveKey(), &mockData)
 
 	return true
 }

@@ -18,34 +18,34 @@ var GlobalConfigData = MockConfigData{
 	Api:  make(map[string]*Api),
 }
 
-func AppendApiData(key string, mockData *ApiData) {
-	GlobalConfigData.Lock()
-	defer GlobalConfigData.Unlock()
+func (configData *MockConfigData) AppendApiData(key string, mockData *ApiData) {
+	configData.Lock()
+	defer configData.Unlock()
 
-	if v, ok := GlobalConfigData.Data[key]; ok {
+	if v, ok := configData.Data[key]; ok {
 		v[mockData.Key] = mockData
 	} else {
 		mockDataMap := make(map[string]*ApiData)
-		GlobalConfigData.Data[key] = mockDataMap
+		configData.Data[key] = mockDataMap
 		mockDataMap[mockData.Key] = mockData
 	}
 }
 
 // ClearConfigData 清除api 相关的数据缓存
-func ClearConfigData() {
-	GlobalConfigData.Lock()
-	defer GlobalConfigData.Unlock()
-	GlobalConfigData.Data = make(map[string]map[string]*ApiData)
-	GlobalConfigData.Api = make(map[string]*Api)
+func (configData *MockConfigData) ClearConfigData() {
+	configData.Lock()
+	defer configData.Unlock()
+	configData.Data = make(map[string]map[string]*ApiData)
+	configData.Api = make(map[string]*Api)
 }
 
-func AppendApi(key string, api *Api) {
-	GlobalConfigData.Lock()
-	defer GlobalConfigData.Unlock()
-	if v, ok := GlobalConfigData.Api[key]; ok {
+func (configData *MockConfigData) AppendApi(key string, api *Api) {
+	configData.Lock()
+	defer configData.Unlock()
+	if v, ok := configData.Api[key]; ok {
 		v.Merge(api)
 	} else {
-		GlobalConfigData.Api[key] = api
+		configData.Api[key] = api
 	}
 }
 
@@ -81,7 +81,7 @@ func HandleConfigFile(path string, fi fs.FileInfo) {
 
 // file路径集合 加载json文件 信息
 func loadApiInfo(filePathList []string) {
-	ClearConfigData()
+	GlobalConfigData.ClearConfigData()
 	for _, p := range filePathList {
 		_ = filepath.Walk(p, func(jsonPath string, info fs.FileInfo, err error) error {
 			if err == nil && !info.IsDir() {
